@@ -1,21 +1,30 @@
 <section class="content">
 
-    <div class="row">
-        okienko wideo
-        <video id="remoteVideo"></video>
-        <video id="localVideo" muted="muted"></video>
-    </div>
 
     <!-- Panel telefonu i status -->
     <div class="row">
-        <div class="col-md-6">
-            <!-- general form elements -->
+        <div class="col-md-5">
             <div class="box box-primary">
                 <div class="box-header with-border">
+                     <div class="col-md-3 col-sm-3 col-xs-12">
                     <h3 class="box-title">Panel telefonu</h3>
+                    </div>
+
+                    
+                    <div class="col-md-3 col-sm-3 col-xs-6">
+                            <div class="info-box-content">
+                                <button id="registerBtn" class="btn waves-effect waves-light" type="submit" name="action" ng-click='registerSIP()'>
+                                    {{vm.info.textBtn}}
+                                </button>
+                        </div>
+                    </div>
+
+                    <div class="col-md-3 col-sm-3 col-xs-6">
+                        <div class="info-box-content">
+                                {{vm.info.status}}
+                    </div>
                 </div>
-                <!-- /.box-header -->
-                <!-- form start -->
+                </div>
                 <form role="form" id="newConnectForm">
                     <div class="box-body">
                         <div class="form-group">
@@ -37,30 +46,79 @@
                             </label>
                         </div>
                     </div>
-                    <!-- /.box-body -->
                 </form>
             </div>
-            <!-- /.box -->
         </div>
-        <!-- /.box -->
 
-        <div class="col-md-2 col-sm-6 col-xs-12">
-            <div class="info-box">
-                <span class="info-box-icon bg-aqua">
-                    <i class="ion ion-ios-gear-outline"></i>
-                </span>
+        <div class="col-md-1">
 
-                <div class="info-box-content">
-                    <span class="info-box-text">Status</span>
-                    <div>{{vm.info.status}}</div>
-                    <button id="registerBtn" class="btn waves-effect waves-light" type="submit" name="action" ng-click='registerSIP()'>
-                        {{vm.info.textBtn}}
-                    </button>
-                </div>
-                <!-- /.info-box-content -->
-            </div>
-            <!-- /.info-box -->
         </div>
+
+                        <!-- Panel kontaktów -->
+                        <div class="col-md-5">
+                              <div class="box box-danger">
+                                  <div class="box-header with-border">
+                                      <h3 class="box-title">Znajomi</h3>
+                                      <div class="box-tools pull-right">
+                                          <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                                              <i class="fa fa-minus"></i>
+                                          </button>
+                                          <button type="button" class="btn btn-box-tool" data-widget="remove">
+                                              <i class="fa fa-times"></i>
+                                          </button>
+                                      </div>
+                                  </div>
+                                  <div class="box-body no-padding">
+                                      <ul class="users-list clearfix">
+                                          <li>
+                                              <img src="/img/user1-128x128.jpg" alt="User Image">
+                                              <a class="users-list-name" href="#">Alexander Pierce</a>
+                                              <span class="users-list-date">Today</span>
+                                          </li>
+                                          <li>
+                                              <img src="/img/user8-128x128.jpg" alt="User Image">
+                                              <a class="users-list-name" href="#">Norman</a>
+                                              <span class="users-list-date">Yesterday</span>
+                                          </li>
+                                          <li>
+                                              <img src="/img/user7-128x128.jpg" alt="User Image">
+                                              <a class="users-list-name" href="#">Jane</a>
+                                              <span class="users-list-date">12 Jan</span>
+                                          </li>
+                                          <li>
+                                              <img src="/img/user6-128x128.jpg" alt="User Image">
+                                              <a class="users-list-name" href="#">John</a>
+                                              <span class="users-list-date">12 Jan</span>
+                                          </li>
+                                          <li>
+                                              <img src="/img/user2-160x160.jpg" alt="User Image">
+                                              <a class="users-list-name" href="#">Alexander</a>
+                                              <span class="users-list-date">13 Jan</span>
+                                          </li>
+                                          <li>
+                                              <img src="/img/user5-128x128.jpg" alt="User Image">
+                                              <a class="users-list-name" href="#">Sarah</a>
+                                              <span class="users-list-date">14 Jan</span>
+                                          </li>
+                                          <li>
+                                              <img src="/img/user4-128x128.jpg" alt="User Image">
+                                              <a class="users-list-name" href="#">Nora</a>
+                                              <span class="users-list-date">15 Jan</span>
+                                          </li>
+                                          <li>
+                                              <img src="/img/user3-128x128.jpg" alt="User Image">
+                                              <a class="users-list-name" href="#">Marek</a>
+                                              <span class="users-list-date">15 Jan</span>
+                                          </li>
+                                      </ul>
+                                  </div>
+                                  <div class="box-footer text-center">
+                                      <a ng-click="onClick()" class="uppercase">Zobacz wszystkich!</a>
+                                  </div>
+                              </div>
+                          </div>
+                          <!-- Koniec panela kontaktów -->
+
     </div>
     <!-- Koniec panelu telefonu i status -->
 
@@ -71,40 +129,10 @@
         <div class="col-md-12">
             <div class="row">
                 <div class="col-md-5">
-
-
                     <ul id="chatList"></ul>
 
                     <ul id="templates">
                         <li id="session-template" class="template session">
-
-
-                            <!-- <div class="col s12 m4">
-                                <div class="card horizontal">
-                                    <div class="card-stacked">
-                                        <div class="row">
-                                            <strong class="display-name"></strong>
-                                            <span class="uri"></span>
-                                        </div>
-                                        <button class="green">Green</button>
-                                        <button class="red">Red</button>
-                                        <form class="dtmf" action="">
-                                            <label>DTMF
-                                                <input type="text" maxlength="1" />
-                                            </label>
-                                            <input type="submit" value="Send" />
-                                        </form>
-                                        <ul class="messages"></ul>
-        
-                                        <div class="card-action">
-                                            <form class="messageForm" action="">
-                                                <input type="text" placeholder="Type to send a message" />
-                                                <input type="submit" value="Send" />
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div> -->
 
                             <div class="box box-warning direct-chat direct-chat-warning card horizontal">
                                 <div class="card-stacked">
@@ -132,36 +160,10 @@
                                         </form>
 
 
-                                        <!-- <ul class="messages"> -->
 
                                             <div class="direct-chat-messages messages">
-
-                                                <div class="direct-chat-msg">
-                                                    <div class="direct-chat-info clearfix">
-                                                        <span class="direct-chat-name pull-left">Ja</span>
-                                                        <span class="direct-chat-timestamp pull-right">23 Jan 2:00 pm</span>
-                                                    </div>
-                                                    <img class="direct-chat-img" src="/img/user1-128x128.jpg" alt="message user image">
-                                                    <div class="direct-chat-text">
-                                                        Is this template really for free? That's unbelievable!
-                                                    </div>
-                                                </div>
-
-                                                <div class="direct-chat-msg">
-                                                    <div class="direct-chat-info clearfix">
-                                                        <span class="direct-chat-name pull-right display-name"></span>
-                                                        <span class="direct-chat-timestamp pull-left uri"></span>
-                                                    </div>
-                                                    <img class="direct-chat-img" src="/img/user3-128x128.jpg" alt="message user image">
-                                                    <div class="direct-chat-text">
-                                                        You better believe it!
-                                                    </div>
-                                                </div>
                                                 
-
                                             </div>
-
-                                        <!-- </ul> -->
                                     </div>
                                 </div>
 
@@ -177,7 +179,6 @@
                                 </div>
                             </div>
 
-
                         </li>
                     </ul>
 
@@ -189,77 +190,18 @@
                 <div class="col-md-2">
 
                 </div>
-                <!-- Panel kontaktów -->
-                <div class="col-md-5">
-                    <div class="box box-danger">
-                        <div class="box-header with-border">
-                            <h3 class="box-title">Latest Members</h3>
-                            <div class="box-tools pull-right">
-                                <span class="label label-danger">8 New Members</span>
-                                <button type="button" class="btn btn-box-tool" data-widget="collapse">
-                                    <i class="fa fa-minus"></i>
-                                </button>
-                                <button type="button" class="btn btn-box-tool" data-widget="remove">
-                                    <i class="fa fa-times"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="box-body no-padding">
-                            <ul class="users-list clearfix">
-                                <li>
-                                    <img src="/img/user1-128x128.jpg" alt="User Image">
-                                    <a class="users-list-name" href="#">Alexander Pierce</a>
-                                    <span class="users-list-date">Today</span>
-                                </li>
-                                <li>
-                                    <img src="/img/user8-128x128.jpg" alt="User Image">
-                                    <a class="users-list-name" href="#">Norman</a>
-                                    <span class="users-list-date">Yesterday</span>
-                                </li>
-                                <li>
-                                    <img src="/img/user7-128x128.jpg" alt="User Image">
-                                    <a class="users-list-name" href="#">Jane</a>
-                                    <span class="users-list-date">12 Jan</span>
-                                </li>
-                                <li>
-                                    <img src="/img/user6-128x128.jpg" alt="User Image">
-                                    <a class="users-list-name" href="#">John</a>
-                                    <span class="users-list-date">12 Jan</span>
-                                </li>
-                                <li>
-                                    <img src="/img/user2-160x160.jpg" alt="User Image">
-                                    <a class="users-list-name" href="#">Alexander</a>
-                                    <span class="users-list-date">13 Jan</span>
-                                </li>
-                                <li>
-                                    <img src="/img/user5-128x128.jpg" alt="User Image">
-                                    <a class="users-list-name" href="#">Sarah</a>
-                                    <span class="users-list-date">14 Jan</span>
-                                </li>
-                                <li>
-                                    <img src="/img/user4-128x128.jpg" alt="User Image">
-                                    <a class="users-list-name" href="#">Nora</a>
-                                    <span class="users-list-date">15 Jan</span>
-                                </li>
-                                <li>
-                                    <img src="/img/user3-128x128.jpg" alt="User Image">
-                                    <a class="users-list-name" href="#">Marek</a>
-                                    <span class="users-list-date">15 Jan</span>
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="box-footer text-center">
-                            <a ng-click="onClick()" class="uppercase">Zobacz wszystkich!</a>
-                        </div>
-                    </div>
-                </div>
-                <!-- Koniec panela kontaktów -->
             </div>
 
         </div>
 
 
     </div>
+
+    <div class="row">
+         okienko wideo
+         <video id="remoteVideo"></video>
+         <video id="localVideo" muted="muted"></video>
+     </div>
 
 
 

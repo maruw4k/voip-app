@@ -210,8 +210,8 @@ class DashboardController {
             node.classList.remove('template');
             // sessionUI.displayName.textContent = displayName || uri.user;
             // sessionUI.uri.textContent = '<' + uri + '>';
-            sessionUI.displayName.textContent = 'Ja';
-            sessionUI.uri.textContent = 'Ja@sip';
+            // sessionUI.displayName.textContent = 'Ja';
+            // sessionUI.uri.textContent = 'Ja@sip';
 
             // DOM event listeners
             sessionUI.green.addEventListener('click', function () {
@@ -353,16 +353,15 @@ class DashboardController {
                 messageNode.textContent = body;
                 if (sender === 'friend') {
                     messageNode.className = 'direct-chat-msg right';
-                    alert('PRzyjaciel');
                     messageNode.innerHTML = '<div class="direct-chat-info clearfix"><span class="direct-chat-name pull-right display-name"></span><span class="direct-chat-timestamp pull-left uri"></span> </div><img class="direct-chat-img" src="/img/user3-128x128.jpg" alt="message user image"> <div class="direct-chat-text"> ' + body + '</div>';
                 } else {
                     messageNode.className = 'direct-chat-msg';
-                    alert('Nie przyadciel');
                     messageNode.innerHTML = '  <div class="direct-chat-info clearfix"> <span class="direct-chat-name pull-left">Ja</span> <span class="direct-chat-timestamp pull-right">23 Jan 2:00 pm</span></div><img class="direct-chat-img" src="/img/user1-128x128.jpg" alt="message user image"><div class="direct-chat-text">' + body + ' </div>';
                 }
                 sessionUI.messages.appendChild(messageNode);
                 sessionUI.messages.scrollTop = sessionUI.messages.scrollHeight;
             }
+            
             if (message) {
                 appendMessage(message.body, 'friend');
             }
