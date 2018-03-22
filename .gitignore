@@ -14,6 +14,8 @@ Thumbs.db
 
 /vendor
 /node_modules
+/.vscode
+.vscode
 Homestead.yaml
 Homestead.json
 .env
@@ -26,3 +28,4 @@ public/js
 public/fonts
 public/css
 public/build
+.vscode/settings.json
