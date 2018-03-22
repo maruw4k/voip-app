@@ -1,8 +1,31 @@
 <section class="content">
 
+    <div class="row">
+        <div style="height: 100px;" class="col-md-8">
+            <div class="box box-warning direct-chat direct-chat-warning">
+            <form id="newConnectForm">
+    
+                <input id="addressUriInput" style="width: 500px;" type="text" placeholder="Adres nadawcy" />
+    
+                <input type="checkbox" id="videoChkBox" />
+                <label for="videoChkBox">Włącz wideo</label>
+    
+                <button class="btn waves-effect waves-light" ng-click="call()">
+                    <i class="material-icons right">call</i>Zadzwoń</button>
+    
+                <button type="submit" id="chatBtn" class="btn waves-effect waves-light">Wiadomość</button>
+    
+                <button type="submit" id="inviteBtn" class="btn waves-effect waves-light">Zaproś</button>
+    
+                <button id="endCallBtn" class="btn waves-effect waves-light">Zakończ połączenie</button>
+    
+            </form>
+        </div>  
+        </div>
+    </div>
 
   <div class="row">
-    <div class="col-md-8">
+    <div class="col-md-12">
       <div class="row">
         <div class="col-md-6">
           <div class="box box-warning direct-chat direct-chat-warning">
@@ -201,13 +224,13 @@
                 </li>
                 <li>
                   <img src="/img/user3-128x128.jpg" alt="User Image">
-                  <a class="users-list-name" href="#">Nadia</a>
+                  <a class="users-list-name" href="#">Marek</a>
                   <span class="users-list-date">15 Jan</span>
                 </li>
               </ul>
             </div>
             <div class="box-footer text-center">
-              <a href="javascript:void(0)" class="uppercase">View All Users</a>
+              <a ng-click="onClick()" class="uppercase">Zobacz wszystkich!</a>
             </div>
           </div>
         </div>
@@ -217,4 +240,7 @@
 
 
   </div>
+
+
+
 </section>

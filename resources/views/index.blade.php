@@ -24,5 +24,6 @@
         <div class="control-sidebar-bg"></div>
     </div>
     <script src="{!! elixir('js/final.js') !!}" async defer></script>
+    <script src="{{ URL::asset('js/sip-0.9.1.min.js') }}"></script>
 </body>
 </html>
