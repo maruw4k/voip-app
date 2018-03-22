@@ -27,7 +27,7 @@ class UserProfileController {
 
       this.userdata.put()
         .then(() => {
-          let alert = { type: 'success', 'title': 'Success!', msg: 'Profile has been updated.' }
+          let alert = { type: 'success', 'title': 'Brawo!', msg: 'Profil został zaktualizowany.' }
           $state.go($state.current, { alerts: alert})
         }, (response) => {
           let formErrors = []
