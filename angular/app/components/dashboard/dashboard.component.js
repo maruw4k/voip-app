@@ -36,7 +36,7 @@ class DashboardController {
             authorizationUser: 'testuser',
             password: '7770751389206',
             traceSip: true,
-            register: false,
+            register: true,
             stunServers: [
                 "stun.l.google.com:19302",
                 "stun.stunprotocol.org:3478",
@@ -348,20 +348,27 @@ class DashboardController {
 
             // Wstawianie pojedyńczej wiadomości do konwersacji
             function appendMessage(body, sender) {
+                //Zmienne do aktualnego czasu
+                var d = new Date();
+                var n = d.toLocaleTimeString();
+
                 messageNode = document.createElement('div');
 
+                console.log(body, 'BODY');
+
                 messageNode.textContent = body;
+                //Zależnie od kogo jest wiadomość, to inny widok tekstu z wiadomością
                 if (sender === 'friend') {
                     messageNode.className = 'direct-chat-msg right';
-                    messageNode.innerHTML = '<div class="direct-chat-info clearfix"><span class="direct-chat-name pull-right display-name"></span><span class="direct-chat-timestamp pull-left uri"></span> </div><img class="direct-chat-img" src="/img/user3-128x128.jpg" alt="message user image"> <div class="direct-chat-text"> ' + body + '</div>';
+                    messageNode.innerHTML = '<div class="direct-chat-info clearfix"><span class="direct-chat-name pull-right display-name"></span><span class="direct-chat-timestamp pull-left uri"> '+ n +' </span> </div><img class="direct-chat-img" src="/img/user3-128x128.jpg" alt="message user image"> <div class="direct-chat-text"> ' + body + '</div>';
                 } else {
                     messageNode.className = 'direct-chat-msg';
-                    messageNode.innerHTML = '  <div class="direct-chat-info clearfix"> <span class="direct-chat-name pull-left">Ja</span> <span class="direct-chat-timestamp pull-right">23 Jan 2:00 pm</span></div><img class="direct-chat-img" src="/img/user1-128x128.jpg" alt="message user image"><div class="direct-chat-text">' + body + ' </div>';
+                    messageNode.innerHTML = '  <div class="direct-chat-info clearfix"> <span class="direct-chat-name pull-left">Ja</span> <span class="direct-chat-timestamp pull-right"> '+ n +' </span></div><img class="direct-chat-img" src="/img/user1-128x128.jpg" alt="message user image"><div class="direct-chat-text">' + body + ' </div>';
                 }
                 sessionUI.messages.appendChild(messageNode);
                 sessionUI.messages.scrollTop = sessionUI.messages.scrollHeight;
             }
-            
+
             if (message) {
                 appendMessage(message.body, 'friend');
             }
@@ -392,7 +399,6 @@ class DashboardController {
             // Dodanie węzła do listy
             elements.sessionList.appendChild(node);
         }
-
 
 
     }
