@@ -13,6 +13,7 @@ use Validator;
 
 class UserController extends Controller
 {
+
     /**
      * Get user current context.
      *

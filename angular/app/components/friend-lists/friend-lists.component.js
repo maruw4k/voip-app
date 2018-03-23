@@ -3,11 +3,10 @@ class FriendListsController {
     'ngInject'
     this.API = API
     this.$state = $state
+    //Do debugowania
+    window.$scope = $scope;
 
-    let Friends = this.API.service('contacts', this.API.all('users'))
-    // let Friends = this.API.service('users')
-
-    console.log(Friends, 'ELOOOOOO2')
+    let Friends = this.API.all('contacts')
 
     Friends.getList()
       .then((response) => {
@@ -46,7 +45,7 @@ class FriendListsController {
     }
   }
 
-  delete (userId) {
+  delete (contactId) {
     let API = this.API
     let $state = this.$state
 
@@ -61,7 +60,7 @@ class FriendListsController {
       showLoaderOnConfirm: true,
       html: false
     }, function () {
-      API.one('users').one('user', userId).remove()
+      API.one('contacts').one('contact', contactId).remove()
         .then(() => {
           swal({
             title: 'Deleted!',
