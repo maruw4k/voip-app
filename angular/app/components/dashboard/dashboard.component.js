@@ -5,23 +5,7 @@ class DashboardController {
 
         this.API = API
         let Friends = this.API.all('contacts')
-
-        Friends.getList()
-          .then((response) => {
-
-            var list = document.getElementsByClassName('users-list')[0];
-            let dataSet = response.plain()
-            var newLI = document.createElement("LI");
-
-            list.appendChild(newLI);
-            newLI.innerHTML = '<li><img src="/img/user2-160x160.jpg" alt="User Image"><a class="users-list-name" href="#">'+dataSet[0].name+'</a><span class="users-list-date">13 Jan</span></li>';
-            
-
-
-            console.log(dataSet[0].name);
-          })
-    
-
+        var dataSet;
         window.$scope = $scope;
         var _this = this;
         this.info = {
@@ -40,6 +24,19 @@ class DashboardController {
         };
 
         var sessionUIs = {};
+
+
+
+        Friends.getList()
+          .then((response) => {
+            _this.dataSet = response.plain()
+          })
+
+          this.clickContact = function(contact) {
+              elements.uaURI.value = contact;
+          }
+
+
 
 
 

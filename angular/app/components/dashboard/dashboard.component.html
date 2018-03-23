@@ -70,27 +70,11 @@
                                   </div>
                                   <div class="box-body no-padding">
                                       <ul class="users-list clearfix">
-                                          <li>
-                                              <img src="/img/user1-128x128.jpg" alt="User Image">
-                                              <a class="users-list-name" href="#">Alexander Pierce</a>
-                                              <span class="users-list-date">Today</span>
-                                          </li>
-                                          <li>
-                                              <img src="/img/user8-128x128.jpg" alt="User Image">
-                                              <a class="users-list-name" href="#">Norman</a>
-                                              <span class="users-list-date">Yesterday</span>
-                                          </li>
-                                          <li>
-                                              <img src="/img/user7-128x128.jpg" alt="User Image">
-                                              <a class="users-list-name" href="#">Jane</a>
-                                              <span class="users-list-date">12 Jan</span>
-                                          </li>
-                                          <li>
-                                              <img src="/img/user3-128x128.jpg" alt="User Image">
-                                              <a class="users-list-name" href="#">Marek</a>
-                                              <span class="users-list-date">15 Jan</span>
-                                          </li>
-
+                                        <li ng-repeat="contact in vm.dataSet">
+                                            <a href="#" ng-click="vm.clickContact(contact.sip_address)"><img src="/img/avatar04.png" alt="Zdjęcie znajomego"></a>
+                                            <a class="users-list-name" ng-click="vm.clickContact(contact.sip_address)" href="#">{{contact.name}}</a>
+                                            <span class="users-list-date">{{contact.sip_address}}</span>
+                                        </li>
                                       </ul>
                                   </div>
                                   <div class="box-footer text-center">
