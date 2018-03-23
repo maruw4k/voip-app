@@ -24,12 +24,6 @@ class DashboardController {
 
 
 
-
-        $scope.onClick = function () {
-            alert('Dupa')
-        }
-
-
         var ua = new SIP.UA({
             uri: 'sip:testuser@192.168.0.17',
             wsServers: ['ws://192.168.0.17:80/mfstwebsock'],
