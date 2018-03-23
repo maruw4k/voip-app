@@ -165,6 +165,17 @@ export function RoutesConfig ($stateProvider, $urlRouterProvider) {
         }
       }
     })
+    .state('app.friendlist', {
+      url: '/friend-lists',
+      data: {
+        auth: true
+      },
+      views: {
+        'main@app': {
+          template: '<friend-lists></friend-lists>'
+        }
+      }
+    })
     .state('app.useredit', {
       url: '/user-edit/:userId',
       data: {

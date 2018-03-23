@@ -1,13 +1,15 @@
-class UserListsController {
+class FriendListsController {
   constructor ($scope, $state, $compile, DTOptionsBuilder, DTColumnBuilder, API) {
     'ngInject'
     this.API = API
     this.$state = $state
 
-    let Users = this.API.service('users')
+    let Friends = this.API.service('contacts', this.API.all('users'))
+    // let Friends = this.API.service('users')
 
+    console.log(Friends, 'ELOOOOOO2')
 
-    Users.getList()
+    Friends.getList()
       .then((response) => {
         let dataSet = response.plain()
 
@@ -19,8 +21,8 @@ class UserListsController {
 
         this.dtColumns = [
           DTColumnBuilder.newColumn('id').withTitle('ID'),
-          DTColumnBuilder.newColumn('name').withTitle('Name'),
-          DTColumnBuilder.newColumn('email').withTitle('Email'),
+          DTColumnBuilder.newColumn('name').withTitle('Nazwa'),
+          DTColumnBuilder.newColumn('sip_address').withTitle('Adres SIP'),
           DTColumnBuilder.newColumn(null).withTitle('Actions').notSortable()
             .renderWith(actionsHtml)
         ]
@@ -77,9 +79,9 @@ class UserListsController {
   $onInit () {}
 }
 
-export const UserListsComponent = {
-  templateUrl: './views/app/components/user-lists/user-lists.component.html',
-  controller: UserListsController,
+export const FriendListsComponent = {
+  templateUrl: './views/app/components/friend-lists/friend-lists.component.html',
+  controller: FriendListsController,
   controllerAs: 'vm',
   bindings: {}
 }
