@@ -1,4 +1,4 @@
-class UserEditController {
+class FriendEditController {
   constructor ($stateParams, $state, API) {
     'ngInject'
 
@@ -60,9 +60,9 @@ class UserEditController {
   $onInit () {}
 }
 
-export const UserEditComponent = {
-  templateUrl: './views/app/components/user-edit/user-edit.component.html',
-  controller: UserEditController,
+export const FriendEditComponent = {
+  templateUrl: './views/app/components/friend-edit/friend-edit.component.html',
+  controller: FriendEditController,
   controllerAs: 'vm',
   bindings: {}
 }
