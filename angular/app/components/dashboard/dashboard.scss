@@ -35,17 +35,17 @@ ul, li {
     text-align: center;
 }
 
-.session video {
-    display: block;
-    visibility: none;
-    height: 0;
-    max-width: 100%;
-}
+// .session video {
+//     display: block;
+//     visibility: none;
+//     height: 0;
+//     max-width: 100%;
+// }
 
-.session video.on {
-    visiblity: visible;
-    height: auto;
-}
+// .session video.on {
+//     visiblity: visible;
+//     height: auto;
+// }
 
 .session .messages {
     max-height: 10em;

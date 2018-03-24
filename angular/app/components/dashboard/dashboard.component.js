@@ -22,6 +22,7 @@ class DashboardController {
             newSessionForm: document.getElementById('newConnectForm'),
             inviteButton: document.getElementById('inviteBtn'),
             messageButton: document.getElementById('chatBtn'),
+            uaVideo: document.getElementById('videoChkBox'),
             uaURI: document.getElementById('addressUriInput'),
             sessionList: document.getElementById('chatList'),
             sessionTemplate: document.getElementById('session-template'),
@@ -47,7 +48,7 @@ class DashboardController {
                 });
 
                 ua.on('registered', function () {
-                    var subscription = ua.subscribe('sip:1111@192.168.0.17', 'presence');
+                    // var subscription = ua.subscribe('sip:1111@192.168.0.17', 'presence');
                     console.log('registered');
                     _this.info.status = 'Zarejestrowany';
 
@@ -65,7 +66,7 @@ class DashboardController {
                 });
             });
 
-        //Pobranie listy znajomych i przypisanie do zmiennej
+        //Pobranie listy znajomych i ustawienie tej wartości na inpucie
         let Friends = this.API.all('contacts');
         Friends.getList()
             .then((response) => {
@@ -73,9 +74,13 @@ class DashboardController {
             });
 
 
+
         //Funkcja do przekzywania adresu sip do panelu telefonu
         this.clickContact = function (contact) {
             elements.uaURI.value = contact;
+
+            console.log(elements.uaVideo.checked);
+            console.log(elements.uaURI.value);
         };
 
 
@@ -95,86 +100,33 @@ class DashboardController {
             }
         };
 
-        // obiekt konfiguracyjny
-        // this.options = {
-        //     media: {
-        //         local: {
-        //             video: document.getElementById('localVideo')
-        //         },
-        //         remote: {
-        //             video: document.getElementById('remoteVideo'),
-        //             // This is necessary to do an audio/video call as opposed to just a video call
-        //             audio: document.getElementById('remoteVideo')
-        //         }
-        //     },
-        //     ua: {}
-        // };
-
-        // // Tworzenie pojedyńczej instancji   
-        // this.simple = new SIP.WebRTC.Simple(this.options);
-
-        // //Dzwonienie
-        // $scope.call = function () {
-        //     _this.info.status = 'Dzwonienie';
-        //     _this.simple.call('marek@192.168.0.17');
-        // }
-
-
         //Wysyłanie zaproszenia
-        function inviteSubmit(e) {
-            console.log('Zaproszenia!!!!!!');
-            e.preventDefault();
-            e.stopPropagation();
+        this.inviteBtnClick = function() {
+            console.log('Wysyłanie zaproszenia');
 
-            console.log('Zaproszenia!!!!!!');
+            var uri = elements.uaURI.value;
 
-            // Parse config options
-            // var videoConfig = video.checked;
-            // console.log('Zaproszenia!!!!!!', video.checked);
-            // var uri = recipientUri.value;
-            // recipientUri.value = '';
+            if (!elements.uaURI.value) return;
 
-            var video = true;
-            var uri = 'sip:marek@192.168.0.17';
-
-            if (!uri) return;
-
-            // Wysyłanie zaproszenia
             var session = ua.invite(uri, {
                 media: {
                     constraints: {
                         audio: true,
-                        video: true
+                        video: elements.uaVideo.checked
                     },
-                    //         local: {
-                    //             video: document.getElementById('localVideo')
-                    //         },
-                    //         remote: {
-                    //             video: document.getElementById('remoteVideo'),
-                    //             // This is necessary to do an audio/video call as opposed to just a video call
-                    //             audio: document.getElementById('remoteVideo')
                 }
             });
-
             var ui = createNewSessionUI(uri, session);
         }
 
 
-        elements.inviteButton.addEventListener('click', inviteSubmit, false);
-        elements.newSessionForm.addEventListener('submit', inviteSubmit, false);
-
-
-        elements.messageButton.addEventListener('click', function (e) {
-            e.preventDefault();
-            e.stopPropagation();
-
-            // Create new Session and append it to list
-            // var uri = recipientUri.value;
+        //Funkcja otwierająca nowe okno wiadomości
+        this.messageBtnClick = function() {
+            console.log('Wysyłanie wiadomości');
             var uri = elements.uaURI.value;
             elements.uaURI.value = '';
             var ui = createNewSessionUI(uri);
-        }, false);
-
+        }
 
 
 
@@ -188,8 +140,7 @@ class DashboardController {
             uri = session ?
                 session.remoteIdentity.uri :
                 SIP.Utils.normalizeTarget(uri, ua.configuration.hostport_params);
-            // var displayName = (session && session.remoteIdentity.displayName) || uri.user;
-            var displayName = (session && session.remoteIdentity.displayName) || 'użytkownik';
+            var displayName = (session && session.remoteIdentity.displayName) || uri.user;
 
             if (!uri) {
                 return;
@@ -216,10 +167,8 @@ class DashboardController {
 
             // Aktualizacja szablonu
             node.classList.remove('template');
-            // sessionUI.displayName.textContent = displayName || uri.user;
-            // sessionUI.uri.textContent = '<' + uri + '>';
-            // sessionUI.displayName.textContent = 'Ja';
-            // sessionUI.uri.textContent = 'Ja@sip';
+            sessionUI.displayName.textContent = displayName || uri.user;
+            sessionUI.uri.textContent = '(' + uri + ')';
 
             // DOM event listeners
             sessionUI.green.addEventListener('click', function () {
@@ -275,14 +224,14 @@ class DashboardController {
             if (session && !session.accept) {
                 sessionUI.green.disabled = true;
                 sessionUI.green.innerHTML = '...';
-                sessionUI.red.innerHTML = 'Cancel';
+                sessionUI.red.innerHTML = 'Anuluj';
             } else if (!session) {
                 sessionUI.red.disabled = true;
-                sessionUI.green.innerHTML = 'Invite';
+                sessionUI.green.innerHTML = 'Zadzwoń';
                 sessionUI.red.innerHTML = '...';
             } else {
-                sessionUI.green.innerHTML = 'Accept';
-                sessionUI.red.innerHTML = 'Reject';
+                sessionUI.green.innerHTML = 'Odbierz';
+                sessionUI.red.innerHTML = 'Odrzuć';
             }
             sessionUI.dtmfInput.disabled = true;
 
@@ -292,19 +241,18 @@ class DashboardController {
 
                 if (session.accept) {
                     sessionUI.green.disabled = false;
-                    sessionUI.green.innerHTML = 'Accept';
-                    sessionUI.red.innerHTML = 'Reject';
+                    sessionUI.green.innerHTML = 'Odbierz';
+                    sessionUI.red.innerHTML = 'Odrzuć';
                 } else {
                     sessionUI.green.innerHMTL = '...';
-                    sessionUI.red.innerHTML = 'Cancel';
+                    sessionUI.red.innerHTML = 'Anuluj';
                 }
 
                 session.on('accepted', function () {
                     sessionUI.green.disabled = true;
                     sessionUI.green.innerHTML = '...';
-                    sessionUI.red.innerHTML = 'Bye';
+                    sessionUI.red.innerHTML = 'Koniec';
                     sessionUI.dtmfInput.disabled = false;
-                    sessionUI.video.className = 'on';
 
                     session.mediaHandler.render(sessionUI.renderHint);
                 });
@@ -317,9 +265,8 @@ class DashboardController {
                     sessionUI.green.disabled = false;
                     sessionUI.red.disabled = true;
                     sessionUI.dtmfInput.disable = true;
-                    sessionUI.green.innerHTML = 'Invite';
+                    sessionUI.green.innerHTML = 'Zadzwoń';
                     sessionUI.red.innerHTML = '...';
-                    sessionUI.video.className = '';
                     delete sessionUI.session;
                 });
 
@@ -327,9 +274,8 @@ class DashboardController {
                     sessionUI.green.disabled = false;
                     sessionUI.red.disabled = true;
                     sessionUI.dtmfInput.disable = true;
-                    sessionUI.green.innerHTML = 'Invite';
+                    sessionUI.green.innerHTML = 'Zadzwoń';
                     sessionUI.red.innerHTML = '...';
-                    sessionUI.video.className = '';
                     delete sessionUI.session;
                 });
 
@@ -362,8 +308,6 @@ class DashboardController {
 
                 messageNode = document.createElement('div');
 
-                console.log(body, 'BODY');
-
                 messageNode.textContent = body;
                 //Zależnie od kogo jest wiadomość, to inny widok tekstu z wiadomością
                 if (sender === 'friend') {
@@ -371,7 +315,7 @@ class DashboardController {
                     messageNode.innerHTML = '<div class="direct-chat-info clearfix"><span class="direct-chat-name pull-right display-name"></span><span class="direct-chat-timestamp pull-left uri"> ' + n + ' </span> </div><img class="direct-chat-img" src="/img/user3-128x128.jpg" alt="message user image"> <div class="direct-chat-text"> ' + body + '</div>';
                 } else {
                     messageNode.className = 'direct-chat-msg';
-                    messageNode.innerHTML = '  <div class="direct-chat-info clearfix"> <span class="direct-chat-name pull-left">Ja</span> <span class="direct-chat-timestamp pull-right"> ' + n + ' </span></div><img class="direct-chat-img" src="/img/user1-128x128.jpg" alt="message user image"><div class="direct-chat-text">' + body + ' </div>';
+                    messageNode.innerHTML = '  <div class="direct-chat-info clearfix"> <span class="direct-chat-name pull-left display-name">Ja</span> <span class="direct-chat-timestamp pull-right"> ' + n + ' </span></div><img class="direct-chat-img" src="/img/user1-128x128.jpg" alt="message user image"><div class="direct-chat-text">' + body + ' </div>';
                 }
                 sessionUI.messages.appendChild(messageNode);
                 sessionUI.messages.scrollTop = sessionUI.messages.scrollHeight;
@@ -382,10 +326,6 @@ class DashboardController {
             }
 
             ua.on('message', function (message) {
-                if (message.remoteIdentity.uri !== uri) {
-                    console.warn('unmatched message: ', message.remoteIdentity.uri, uri);
-                }
-
                 appendMessage(message.body, 'friend');
             });
 

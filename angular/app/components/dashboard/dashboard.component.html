@@ -6,24 +6,24 @@
         <div class="col-md-5">
             <div class="box box-primary">
                 <div class="box-header with-border">
-                     <div class="col-md-3 col-sm-3 col-xs-12">
-                    <h3 class="box-title">Panel telefonu</h3>
+                    <div class="col-md-3 col-sm-3 col-xs-12">
+                        <h3 class="box-title">Panel telefonu</h3>
                     </div>
 
-                    
+
                     <div class="col-md-3 col-sm-3 col-xs-6">
-                            <div class="info-box-content">
-                                <button id="registerBtn" class="btn waves-effect waves-light" type="submit" name="action" ng-click='registerSIP()'>
-                                    {{vm.info.textBtn}}
-                                </button>
+                        <div class="info-box-content">
+                            <button id="registerBtn" class="btn waves-effect waves-light" type="submit" name="action" ng-click='registerSIP()'>
+                                {{vm.info.textBtn}}
+                            </button>
                         </div>
                     </div>
 
                     <div class="col-md-3 col-sm-3 col-xs-6">
                         <div class="info-box-content">
-                                {{vm.info.status}}
+                            {{vm.info.status}}
+                        </div>
                     </div>
-                </div>
                 </div>
                 <form role="form" id="newConnectForm">
                     <div class="box-body">
@@ -32,13 +32,12 @@
                             <input class="form-control" id="addressUriInput" placeholder="Wprowadź adres rozmówcy">
                         </div>
                         <div class="form-group">
-                            <button type="button" class="btn btn-success btn-flat" ng-click="call()">Zadzwoń
+                            <button type="button" class="btn btn-success btn-flat" ng-click="vm.inviteBtnClick()">Zadzwoń
                                 <span class="glyphicon glyphicon-earphone"></span>
                             </button>
-                            <button id="chatBtn" type="submit" class="btn btn-info btn-flat">Wyślij Wiadomość
+                            <button id="chatBtn" class="btn btn-info btn-flat" ng-click="vm.messageBtnClick()">Wyślij Wiadomość
                                 <span class="glyphicon glyphicon-comment"></span>
                             </button>
-                            <button id="inviteBtn" type="submit" class="btn btn-info btn-flat">Zaproś!</button>
                         </div>
                         <div class="checkbox">
                             <label>
@@ -54,35 +53,37 @@
 
         </div>
 
-                        <!-- Panel kontaktów -->
-                        <div class="col-md-5">
-                              <div class="box box-danger">
-                                  <div class="box-header with-border">
-                                      <h3 class="box-title">Znajomi</h3>
-                                      <div class="box-tools pull-right">
-                                          <button type="button" class="btn btn-box-tool" data-widget="collapse">
-                                              <i class="fa fa-minus"></i>
-                                          </button>
-                                          <button type="button" class="btn btn-box-tool" data-widget="remove">
-                                              <i class="fa fa-times"></i>
-                                          </button>
-                                      </div>
-                                  </div>
-                                  <div class="box-body no-padding">
-                                      <ul class="users-list clearfix">
-                                        <li ng-repeat="contact in vm.dataSet">
-                                            <a href="#" ng-click="vm.clickContact(contact.sip_address)"><img src="/img/avatar04.png" alt="Zdjęcie znajomego"></a>
-                                            <a class="users-list-name" ng-click="vm.clickContact(contact.sip_address)" href="#">{{contact.name}}</a>
-                                            <span class="users-list-date">{{contact.sip_address}}</span>
-                                        </li>
-                                      </ul>
-                                  </div>
-                                  <div class="box-footer text-center">
-                                      <a ui-sref='app.friendlist' class="uppercase">Zobacz wszystkich!</a>
-                                  </div>
-                              </div>
-                          </div>
-                          <!-- Koniec panela kontaktów -->
+        <!-- Panel kontaktów -->
+        <div class="col-md-5">
+            <div class="box box-danger">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Znajomi</h3>
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                            <i class="fa fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-box-tool" data-widget="remove">
+                            <i class="fa fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="box-body no-padding">
+                    <ul class="users-list clearfix">
+                        <li ng-repeat="contact in vm.dataSet">
+                            <a href="#" ng-click="vm.clickContact(contact.sip_address)">
+                                <img src="/img/avatar04.png" alt="Zdjęcie znajomego">
+                            </a>
+                            <a class="users-list-name" ng-click="vm.clickContact(contact.sip_address)" href="#">{{contact.name}}</a>
+                            <span class="users-list-date">{{contact.sip_address}}</span>
+                        </li>
+                    </ul>
+                </div>
+                <div class="box-footer text-center">
+                    <a ui-sref='app.friendlist' class="uppercase">Zobacz wszystkich!</a>
+                </div>
+            </div>
+        </div>
+        <!-- Koniec panela kontaktów -->
 
     </div>
     <!-- Koniec panelu telefonu i status -->
@@ -101,9 +102,13 @@
                             <div class="box box-warning direct-chat direct-chat-warning card horizontal">
                                 <div class="card-stacked">
                                     <div class="box-header with-border">
-                                        <h3 class="box-title">Chat</h3>
+                                        <h3 class="box-title display-name"></h3>
+                                        <span class="uri"></span>
                                         <div class="box-tools pull-right">
                                             <span data-toggle="tooltip" title="3 New Messages" class="badge bg-yellow">3</span>
+                                            <button type="green" class="btn btn-box-tool">
+                                                    <span class="glyphicon glyphicon-earphone"></span>
+                                            </button>
                                             <button type="button" class="btn btn-box-tool" data-widget="collapse">
                                                 <i class="fa fa-minus"></i>
                                             </button>
@@ -120,14 +125,13 @@
                                             <label>DTMF
                                                 <input type="text" maxlength="1" />
                                             </label>
-                                            <input type="submit" value="Send" />
+                                            <input type="submit" value="Wyślij" />
                                         </form>
 
+                                        <video autoplay>Wyłączone lub niedostępne</video>
+                                        <div class="direct-chat-messages messages">
 
-
-                                            <div class="direct-chat-messages messages">
-                                                
-                                            </div>
+                                        </div>
                                     </div>
                                 </div>
 
@@ -146,9 +150,6 @@
                         </li>
                     </ul>
 
-
-
-
                 </div>
 
                 <div class="col-md-2">
@@ -160,13 +161,5 @@
 
 
     </div>
-
-    <div class="row">
-         okienko wideo
-         <video id="remoteVideo"></video>
-         <video id="localVideo" muted="muted"></video>
-     </div>
-
-
 
 </section>
