@@ -35,6 +35,7 @@
                 <p ng-show="userForm.email.customError" class="help-block">{{userForm.email.customError}}</p>
               </div>
             </div>
+
             <div class="page-header">
               <h4>Zaktualizuj hasło <small>( opcjonalnie )</small></h4>
             </div>
@@ -78,6 +79,34 @@
                 <p ng-show="userForm.new_password_confirmation.$error.passwordVerify && (vm.formSubmitted || userForm.new_password_confirmation.$touched)" class="help-block">Password Mismatch</p>
                 <p ng-show="userForm.new_password_confirmation.customError" class="help-block">{{userForm.new_password.customError}}</p>
               </div>
+            </div>
+
+            <div class="page-header">
+                <h4>Dane konta SIP</h4>
+              </div>
+            <div class="form-group">
+                <label for="sipadress" class="col-sm-3 control-label">SIP URI</label>
+                <div class="col-sm-9">
+                  <input type="text" class="form-control" ng-model="vm.userdata.data.sip_uri" name="sip_uri" placeholder="SIP URI" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="sip_login" class="col-sm-3 control-label">SIP login</label>
+                <div class="col-sm-9">
+                  <input type="text" class="form-control" ng-model="vm.userdata.data.sip_login" name="sip_login" placeholder="SIP login" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="sip_password" class="col-sm-3 control-label">SIP hasło</label>
+                <div class="col-sm-9">
+                  <input type="text" class="form-control" ng-model="vm.userdata.data.sip_password" name="sip_password" placeholder="SIP hasło" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="sip_ws" class="col-sm-3 control-label">SIP WS</label>
+                <div class="col-sm-9">
+                  <input type="text" class="form-control" ng-model="vm.userdata.data.sip_ws" name="sip_ws" placeholder="SIP WS" required>
+                </div>
             </div>
           </div>
           <div class="box-footer">

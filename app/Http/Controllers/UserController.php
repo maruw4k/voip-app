@@ -46,12 +46,20 @@ class UserController extends Controller
                         'data.new_password',
                         'data.new_password_confirmation',
                         'data.name',
-                        'data.email'
+                        'data.email',
+                        'data.sip_uri',
+                        'data.sip_login',
+                        'data.sip_password',
+                        'data.sip_ws'
                     );
 
         $userForm = $userForm['data'];
         $user->name = $userForm['name'];
         $user->email = $userForm['email'];
+        $user->sip_uri = $userForm['sip_uri'];
+        $user->sip_login = $userForm['sip_login'];
+        $user->sip_password = $userForm['sip_password'];
+        $user->sip_ws = $userForm['sip_ws'];
 
         if ($request->has('data.current_password')) {
             Validator::extend('hashmatch', function ($attribute, $value, $parameters) {

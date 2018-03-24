@@ -2,16 +2,21 @@ class DashboardController {
     constructor($scope, API) {
         'ngInject'
 
-
-        this.API = API
-        let Friends = this.API.all('contacts')
+        this.API = API;
+        var _this = this;
         var dataSet;
         window.$scope = $scope;
-        var _this = this;
+
         this.info = {
             status: 'Łączenie',
-            textBtn: 'Zarejestruj'
-        }
+            textBtn: 'Zarejestruj',
+        };
+        var ua;
+
+        let sipConfig = {
+            traceSip: true,
+            register: false
+        };
 
         var elements = {
             newSessionForm: document.getElementById('newConnectForm'),
@@ -25,77 +30,70 @@ class DashboardController {
 
         var sessionUIs = {};
 
+        //Pobranie danych użytkownika i utworzenie agenta sip dla telefonu
+        let UserData = API.service('me', API.all('users'))
+        UserData.one().get()
+            .then((response) => {
+                sipConfig.uri = response.data.sip_uri;
+                sipConfig.wsServers = response.data.sip_ws;
+                sipConfig.authorizationUser = response.data.sip_login;
+                sipConfig.password = response.data.sip_password;
+            }).then(() => {
+                ua = new SIP.UA(sipConfig);
 
+                ua.on('connected', function () {
+                    console.log('Connected');
+                    _this.info.status = 'Połączony';
+                });
 
+                ua.on('registered', function () {
+                    var subscription = ua.subscribe('sip:1111@192.168.0.17', 'presence');
+                    console.log('registered');
+                    _this.info.status = 'Zarejestrowany';
+
+                });
+
+                ua.on('invite', function (session) {
+                    _this.info.status = 'Coś przychodzi';
+                    createNewSessionUI(session.remoteIdentity.uri, session);
+                });
+
+                ua.on('message', function (message) {
+                    if (!sessionUIs[message.remoteIdentity.uri]) {
+                        createNewSessionUI(message.remoteIdentity.uri, null, message);
+                    }
+                });
+            });
+
+        //Pobranie listy znajomych i przypisanie do zmiennej
+        let Friends = this.API.all('contacts');
         Friends.getList()
-          .then((response) => {
-            _this.dataSet = response.plain()
-          })
-
-          this.clickContact = function(contact) {
-              elements.uaURI.value = contact;
-          }
+            .then((response) => {
+                _this.dataSet = response.plain()
+            });
 
 
+        //Funkcja do przekzywania adresu sip do panelu telefonu
+        this.clickContact = function (contact) {
+            elements.uaURI.value = contact;
+        };
 
 
-
-        var ua = new SIP.UA({
-            uri: 'sip:testuser@192.168.0.17',
-            wsServers: ['ws://192.168.0.17:80/mfstwebsock'],
-            authorizationUser: 'testuser',
-            password: '7770751389206',
-            traceSip: true,
-            register: true,
-            stunServers: [
-                "stun.l.google.com:19302",
-                "stun.stunprotocol.org:3478",
-                "stun.voiparound.com",
-                "stun.voipbuster.com",
-                "stun.turnservers.com:3478"
-            ],
-        });
-
-
-
-        ua.on('connected', function () {
-            console.log('Connected');
-            _this.info.status = 'Połączony';
-        });
-
-        ua.on('registered', function () {
-            var subscription = ua.subscribe('sip:1111@192.168.0.17', 'presence');
-            console.log('registered');
-            _this.info.status = 'Zarejestrowany';
-
-        });
-
-        ua.on('invite', function (session) {
-            _this.info.status = 'Coś przychodzi';
-            createNewSessionUI(session.remoteIdentity.uri, session);
-        });
-
-        ua.on('message', function (message) {
-            if (!sessionUIs[message.remoteIdentity.uri]) {
-                createNewSessionUI(message.remoteIdentity.uri, null, message);
-            }
-        });
-
-
+        //Logowanie/wylogowanie z serwera SIP
         $scope.registerSIP = function () {
-            console.log('METODAAAAAAAAAAAAAA');
             if (!ua) return;
-
             if (ua.isRegistered()) {
                 _this.info.textBtn = 'Zarejestruj';
                 ua.unregister();
                 _this.info.status = 'Wylogowano';
+                console.log('Wylogowano');
             } else {
                 _this.info.textBtn = 'Wyloguj';
                 ua.register();
                 _this.info.status = 'Zarejestrowano';
+                console.log('Zarejestrowano');
             }
-        }
+        };
 
         // obiekt konfiguracyjny
         // this.options = {
@@ -370,10 +368,10 @@ class DashboardController {
                 //Zależnie od kogo jest wiadomość, to inny widok tekstu z wiadomością
                 if (sender === 'friend') {
                     messageNode.className = 'direct-chat-msg right';
-                    messageNode.innerHTML = '<div class="direct-chat-info clearfix"><span class="direct-chat-name pull-right display-name"></span><span class="direct-chat-timestamp pull-left uri"> '+ n +' </span> </div><img class="direct-chat-img" src="/img/user3-128x128.jpg" alt="message user image"> <div class="direct-chat-text"> ' + body + '</div>';
+                    messageNode.innerHTML = '<div class="direct-chat-info clearfix"><span class="direct-chat-name pull-right display-name"></span><span class="direct-chat-timestamp pull-left uri"> ' + n + ' </span> </div><img class="direct-chat-img" src="/img/user3-128x128.jpg" alt="message user image"> <div class="direct-chat-text"> ' + body + '</div>';
                 } else {
                     messageNode.className = 'direct-chat-msg';
-                    messageNode.innerHTML = '  <div class="direct-chat-info clearfix"> <span class="direct-chat-name pull-left">Ja</span> <span class="direct-chat-timestamp pull-right"> '+ n +' </span></div><img class="direct-chat-img" src="/img/user1-128x128.jpg" alt="message user image"><div class="direct-chat-text">' + body + ' </div>';
+                    messageNode.innerHTML = '  <div class="direct-chat-info clearfix"> <span class="direct-chat-name pull-left">Ja</span> <span class="direct-chat-timestamp pull-right"> ' + n + ' </span></div><img class="direct-chat-img" src="/img/user1-128x128.jpg" alt="message user image"><div class="direct-chat-text">' + body + ' </div>';
                 }
                 sessionUI.messages.appendChild(messageNode);
                 sessionUI.messages.scrollTop = sessionUI.messages.scrollHeight;

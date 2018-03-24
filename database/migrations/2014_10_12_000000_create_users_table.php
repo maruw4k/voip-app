@@ -17,6 +17,10 @@ class CreateUsersTable extends Migration
             $table->string('oauth_provider')->nullable();
             $table->string('oauth_provider_id')->nullable();
             $table->string('name');
+            $table->string('sip_uri');
+            $table->string('sip_login');
+            $table->string('sip_password');
+            $table->string('sip_ws');
             $table->string('email')->unique();
             $table->string('password', 60);
             $table->string('avatar')->nullable();
