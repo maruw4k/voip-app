@@ -10,7 +10,11 @@ class DashboardController {
         this.info = {
             status: 'Łączenie',
             textBtn: 'Zarejestruj',
+            bandwith: '(brak aktywnego połączenia)',
+            mos: '(brak aktywnego połączenia)',
         };
+
+        $scope.mos = 'niema';
         var ua;
 
         let sipConfig = {
@@ -101,7 +105,7 @@ class DashboardController {
         };
 
         //Wysyłanie zaproszenia
-        this.inviteBtnClick = function() {
+        this.inviteBtnClick = function () {
             console.log('Wysyłanie zaproszenia');
 
             var uri = elements.uaURI.value;
@@ -117,15 +121,27 @@ class DashboardController {
                 }
             });
             var ui = createNewSessionUI(uri, session);
+            console.log(ui, 'UI dupa');
+            console.log(session, 'session dupa');
+
         }
 
 
         //Funkcja otwierająca nowe okno wiadomości
-        this.messageBtnClick = function() {
+        this.messageBtnClick = function () {
             console.log('Wysyłanie wiadomości');
             var uri = elements.uaURI.value;
             elements.uaURI.value = '';
             var ui = createNewSessionUI(uri);
+        }
+
+
+
+
+        //Funkcja otwierająca nowe okno wiadomości
+        this.showStatistic = function () {
+
+            _this.info.bandwith = 'ELO';
         }
 
 
@@ -191,6 +207,20 @@ class DashboardController {
                     setUpListeners(session);
                 } else if (session.accept && !session.startTime) { // Incoming, not connected
                     session.accept(options);
+
+                    console.log(session, 'SESJA');
+
+                    setInterval(function () {
+
+                        console.log(session, 'SESJA po 333333333333333333333');
+
+
+
+
+
+
+
+                    }, 5000);
                 }
             }, false);
 
@@ -255,6 +285,80 @@ class DashboardController {
                     sessionUI.dtmfInput.disabled = false;
 
                     session.mediaHandler.render(sessionUI.renderHint);
+
+                    console.log(session, 'session.mediaHandler. SESJA');
+
+
+                    var rttMeasures = [];
+
+
+                    console.log(session.mediaHandler.peerConnection, 'SESJA po 323423');
+
+                    getStats(session.mediaHandler.peerConnection, function (result) {
+                        console.log('rezultat', result);
+                        document.getElementById('bandwith').innerHTML = bytesToSize(result.bandwidth.speed);
+                        document.getElementById('codecsSend').innerHTML = result.audio.send.codecs.concat(result.video.send.codecs).join(', ');
+                        document.getElementById('codecsRecv').innerHTML = result.audio.recv.codecs.concat(result.video.recv.codecs).join(', ');
+                        document.getElementById('encryption').innerHTML = result.encryption;
+                        document.getElementById('resolutionSend').innerHTML = result.resolutions.send.width + 'x' + result.resolutions.send.height;
+                        document.getElementById('resolutionRecv').innerHTML = result.resolutions.recv.width + 'x' + result.resolutions.recv.height;
+                        document.getElementById('sendDate').innerHTML = bytesToSize(result.audio.bytesSent + result.video.bytesSent);
+                        document.getElementById('recDate').innerHTML = bytesToSize(result.audio.bytesReceived + result.video.bytesReceived);
+
+                        for (var i in result.results) {
+                            var now = result.results[i];
+
+                            if (now.type == 'googCandidatePair') {
+                                // console.log('now',now);
+                                console.log('now.googRtt', now.googRtt);
+                                rttMeasures.push(now.googRtt);
+                                var avgRtt = average(rttMeasures);
+                                console.log('avgrtt', avgRtt);
+
+                                if (avgRtt === null) {
+                                    avgRtt = 0;
+                                }
+
+                                var emodel = 0;
+                                if (avgRtt / 2 >= 500)
+                                    emodel = 1;
+                                else if (avgRtt / 2 >= 400)
+                                    emodel = 2;
+                                else if (avgRtt / 2 >= 300)
+                                    emodel = 3;
+                                else if (avgRtt / 2 >= 200)
+                                    emodel = 4;
+                                else if (avgRtt / 2 < 200)
+                                    emodel = 5;
+
+                                document.getElementById('mos').innerHTML = emodel.toString();
+                                document.getElementById('mos-progress').style.width = emodel.toString() + '0%';
+                            }
+                        }
+                    }, 1000);
+
+                    function average(values) {
+                        var sumValues = values.reduce(function (sum, value) {
+                            return sum + value;
+                        }, 0);
+                        return (sumValues / values.length);
+                    }
+
+                    function bytesToSize(bytes) {
+                        var k = 1000;
+                        var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+                        if (bytes <= 0) {
+                            return '0 Bytes';
+                        }
+                        var i = parseInt(Math.floor(Math.log(bytes) / Math.log(k)), 10);
+
+                        if (!sizes[i]) {
+                            return '0 Bytes';
+                        }
+
+                        return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
+                    }
+
                 });
 
                 session.mediaHandler.on('addStream', function () {

@@ -44,6 +44,9 @@
                                 <input id="videoChkBox" type="checkbox"> Włącz wideo
                             </label>
                         </div>
+
+                        <button type="button" class="btn btn-success btn-flat" ng-click="vm.showStatistic()">Pokaż statystyki
+                        </button>
                     </div>
                 </form>
             </div>
@@ -90,7 +93,6 @@
 
 
 
-
     <div class="row">
         <div class="col-md-12">
             <div class="row">
@@ -107,7 +109,7 @@
                                         <div class="box-tools pull-right">
                                             <span data-toggle="tooltip" title="3 New Messages" class="badge bg-yellow">3</span>
                                             <button type="green" class="btn btn-box-tool">
-                                                    <span class="glyphicon glyphicon-earphone"></span>
+                                                <span class="glyphicon glyphicon-earphone"></span>
                                             </button>
                                             <button type="button" class="btn btn-box-tool" data-widget="collapse">
                                                 <i class="fa fa-minus"></i>
@@ -152,14 +154,47 @@
 
                 </div>
 
-                <div class="col-md-2">
+
+                <div class="col-md-1">
+                </div>
+
+                <div class="col-md-5">
+                        <div class="info-box bg-aqua">
+                                <span class="info-box-icon"><i class="ion-ios-gear-outline"></i></span>
+                    
+                                <div class="info-box-content">
+                                  <span class="info-box-text">Parametry połączenia</span>
+
+                                 
+                                  <div>
+                                      Przepustowość: <span id="bandwith" class="info-box-number">(brak połączenia) </span>
+                                  </div>
+                    
+                                  <div class="progress">
+                                    <div id="mos-progress" class="progress-bar" style="width: 40%"></div>
+                                  </div>
+
+                                      <div>MOS: <span class="progress-description" id="mos"></span></div>
+                                      <div>Moje kodeki: <span id="codecsSend"></span></div>
+                                      <div>Adresata kodeki : <span id="codecsRecv"></span></div>
+                                      <div>Szyfrowanie: <span id="encryption"></span></div>
+                                      <div>Rozdzielczość wysyłana: <span id="resolutionSend"></span></div>
+                                      <div>Rozdzielczość odbierana: <span id="resolutionRecv"></span></div>
+                                      <div>Wysłane dane: <span id="sendDate"></span></div>
+                                      <div>Otrzymane dane: <span id="recDate"></span></div>
+                              </div>
 
                 </div>
+
+
+
+
             </div>
 
         </div>
 
 
     </div>
+    
 
 </section>
