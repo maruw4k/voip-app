@@ -78,6 +78,7 @@ class DashboardController {
         _this.updateChart(10, 0);
 
 
+        // let Friends = this.API.all('contacts')
         //Pobranie danych użytkownika i utworzenie agenta sip dla telefonu
         let UserData = API.service('me', API.all('users'))
         UserData.one().get()

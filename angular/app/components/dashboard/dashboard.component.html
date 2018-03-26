@@ -38,14 +38,76 @@
                                 <span class="glyphicon glyphicon-comment"></span>
                             </button>
                             <div class="checkbox">
-                                    <label>
-                                        <input id="videoChkBox" type="checkbox"> Włącz wideo
-                                    </label>
-                                </div>
+                                <label>
+                                    <input id="videoChkBox" type="checkbox"> Włącz wideo
+                                </label>
+                            </div>
                         </div>
                     </div>
                 </form>
             </div>
+
+
+            <ul id="chatList"></ul>
+            <ul id="templates">
+                <li id="session-template" class="template session">
+
+                    <div class="box box-warning direct-chat direct-chat-warning card horizontal">
+                        <div class="card-stacked">
+                            <div class="box-header with-border">
+                                <h3 class="box-title display-name"></h3>
+                                <span class="uri"></span>
+                                <div class="box-tools pull-right">
+                                    <span data-toggle="tooltip" class="badge bg-yellow">1</span>
+                                    <button type="green" class="btn btn-box-tool">
+                                        <span class="glyphicon glyphicon-earphone"></span>
+                                    </button>
+                                    <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                                        <i class="fa fa-minus"></i>
+                                    </button>
+                                    <button type="button" class="btn btn-box-tool" data-widget="remove">
+                                        <i class="fa fa-times"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="box-body">
+
+                                <div class="btn-group">
+
+                                    <button class="btn btn-flat green btn-success"></button>
+                                    <button class="btn btn-flat red btn-danger"></button>
+                                    <span>&nbsp;</span>
+                                </div>
+                                <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                                <form class="dtmf" action="">
+                                    <input type="text" maxlength="1" disabled="">
+                                    <input type="submit" class="btn-primary" value="Wyślij DTFM">
+                                </form>
+
+
+                                <video autoplay>Wyłączone lub niedostępne</video>
+                                <div class="direct-chat-messages messages">
+
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="box-footer card-action">
+                            <form action="" class="messageForm">
+                                <div class="input-group">
+                                    <input type="text" name="message" placeholder="Wprowadź wiadomość ..." class="form-control">
+                                    <span class="input-group-btn">
+                                        <button type="submit" class="btn btn-warning btn-flat">Wyślij</button>
+                                    </span>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                </li>
+            </ul>
         </div>
 
         <div class="col-md-1">
@@ -59,7 +121,8 @@
                     <h3 class="box-title">Znajomi</h3>
                     <span>&nbsp;&nbsp; </span>
                     <button ui-sref='app.friendadd' type="button" class="btn btn-default">
-                        Dodaj znajomego&nbsp;&nbsp;&nbsp;<i class="fa fa-plus"></i>
+                        Dodaj znajomego&nbsp;&nbsp;&nbsp;
+                        <i class="fa fa-plus"></i>
                     </button>
                     <div class="box-tools pull-right">
                         <button type="button" class="btn btn-box-tool" data-widget="collapse">
@@ -77,8 +140,7 @@
                                 <img src="/img/avatar.png" alt="Zdjęcie znajomego">
                             </a>
                             <a class="users-list-name" ng-click="vm.clickContact(contact.sip_address)" href="#">
-                                {{contact.name}}
-                                &nbsp;
+                                {{contact.name}} &nbsp;
                                 <span id="dot-{{contact.id}}" class="avaliable-dot"></span>
                             </a>
                             <span class="users-list-date">{{contact.sip_address}}</span>
@@ -89,6 +151,86 @@
                     <a ui-sref='app.friendlist' class="uppercase">Zobacz wszystkich!</a>
                 </div>
             </div>
+
+            <div class="box box-primary">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Parametry połączenia</h3>
+
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                            <i class="fa fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-box-tool" data-widget="remove">
+                            <i class="fa fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="info-box">
+                        <span class="info-box-icon">
+                            <i class="ion-ios-gear-outline"></i>
+                        </span>
+
+                        <div class="info-box-content">
+
+
+                            <div>
+                                Przepustowość:
+                                <span id="bandwith">(brak połączenia) </span>
+                            </div>
+
+                            <div>
+                                <div id="mos-progress" class="progress-bar" style="width: 40%"></div>
+                            </div>
+
+                            <div>MOS:
+                                <span class="progress-description" id="mos"></span>
+                            </div>
+                            <div>Moje kodeki:
+                                <span id="codecsSend"></span>
+                            </div>
+                            <div>Adresata kodeki:
+                                <span id="codecsRecv"></span>
+                            </div>
+                            <div>Szyfrowanie:
+                                <span id="encryption"></span>
+                            </div>
+                            <div>Rozdzielczość wysyłana:
+                                <span id="resolutionSend"></span>
+                            </div>
+                            <div>Rozdzielczość odbierana:
+                                <span id="resolutionRecv"></span>
+                            </div>
+                            <div>Wysłane dane:
+                                <span id="sendDate"></span>
+                            </div>
+                            <div>Otrzymane dane:
+                                <span id="recDate"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="box box-primary">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Przepustowość</h3>
+
+                    <div class="box-tools pull-right">
+                        <button type="button" class="btn btn-box-tool" data-widget="collapse">
+                            <i class="fa fa-minus"></i>
+                        </button>
+                        <button type="button" class="btn btn-box-tool" data-widget="remove">
+                            <i class="fa fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="box-body">
+                    <div class="chart">
+                        <div id="chartContainer" style="height: 370px; width:100%;"></div>
+                    </div>
+                </div>
+            </div>
         </div>
         <!-- Koniec panela kontaktów -->
 
@@ -96,163 +238,4 @@
     <!-- Koniec panelu telefonu i status -->
 
 
-
-    <div class="row">
-        <div class="col-md-12">
-            <div class="row">
-                <div class="col-md-5">
-                    <ul id="chatList"></ul>
-                    <ul id="templates">
-                        <li id="session-template" class="template session">
-
-                            <div class="box box-warning direct-chat direct-chat-warning card horizontal">
-                                <div class="card-stacked">
-                                    <div class="box-header with-border">
-                                        <h3 class="box-title display-name"></h3>
-                                        <span class="uri"></span>
-                                        <div class="box-tools pull-right">
-                                            <span data-toggle="tooltip" class="badge bg-yellow">1</span>
-                                            <button type="green" class="btn btn-box-tool">
-                                                <span class="glyphicon glyphicon-earphone"></span>
-                                            </button>
-                                            <button type="button" class="btn btn-box-tool" data-widget="collapse">
-                                                <i class="fa fa-minus"></i>
-                                            </button>
-                                            <button type="button" class="btn btn-box-tool" data-widget="remove">
-                                                <i class="fa fa-times"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                    <div class="box-body">
-           
-                                        <div class="btn-group">
-
-                                            <button class="btn btn-flat green btn-success"></button>
-                                            <button class="btn btn-flat red btn-danger"></button>
-                                            <span>&nbsp;</span>
-                                        </div>
-                                        <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
-                                        <form class="dtmf" action="">
-                                                <input type="text" maxlength="1" disabled="">
-                                                <input type="submit" class="btn-primary" value="Wyślij DTFM">
-                                        </form>
-
-                                  
-                                        <video autoplay>Wyłączone lub niedostępne</video>
-                                        <div class="direct-chat-messages messages">
-
-                                        </div>
-                                    </div>
-
-                                </div>
-
-                                <div class="box-footer card-action">
-                                    <form action="" class="messageForm">
-                                        <div class="input-group">
-                                            <input type="text" name="message" placeholder="Wprowadź wiadomość ..." class="form-control">
-                                            <span class="input-group-btn">
-                                                <button type="submit" class="btn btn-warning btn-flat">Wyślij</button>
-                                            </span>
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-
-                        </li>
-                    </ul>
-
-                </div>
-
-
-                <div class="col-md-1">
-                </div>
-
-                <div class="col-md-5">
-                    <div class="box box-primary">
-                        <div class="box-header with-border">
-                            <h3 class="box-title">Parametry połączenia</h3>
-
-                            <div class="box-tools pull-right">
-                                <button type="button" class="btn btn-box-tool" data-widget="collapse">
-                                    <i class="fa fa-minus"></i>
-                                </button>
-                                <button type="button" class="btn btn-box-tool" data-widget="remove">
-                                    <i class="fa fa-times"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="box-body">
-                            <div class="info-box">
-                                <span class="info-box-icon">
-                                    <i class="ion-ios-gear-outline"></i>
-                                </span>
-
-                                <div class="info-box-content">
-
-
-                                    <div>
-                                        Przepustowość:
-                                        <span id="bandwith">(brak połączenia) </span>
-                                    </div>
-
-                                    <div>
-                                        <div id="mos-progress" class="progress-bar" style="width: 40%"></div>
-                                    </div>
-
-
-                                    <div>MOS:
-                                        <span class="progress-description" id="mos"></span>
-                                    </div>
-                                    <div>Moje kodeki:
-                                        <span id="codecsSend"></span>
-                                    </div>
-                                    <div>Adresata kodeki:
-                                        <span id="codecsRecv"></span>
-                                    </div>
-                                    <div>Szyfrowanie:
-                                        <span id="encryption"></span>
-                                    </div>
-                                    <div>Rozdzielczość wysyłana:
-                                        <span id="resolutionSend"></span>
-                                    </div>
-                                    <div>Rozdzielczość odbierana:
-                                        <span id="resolutionRecv"></span>
-                                    </div>
-                                    <div>Wysłane dane:
-                                        <span id="sendDate"></span>
-                                    </div>
-                                    <div>Otrzymane dane:
-                                        <span id="recDate"></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="box box-primary">
-                            <div class="box-header with-border">
-                                <h3 class="box-title">Przepustowość</h3>
-        
-                                <div class="box-tools pull-right">
-                                    <button type="button" class="btn btn-box-tool" data-widget="collapse">
-                                        <i class="fa fa-minus"></i>
-                                    </button>
-                                    <button type="button" class="btn btn-box-tool" data-widget="remove">
-                                        <i class="fa fa-times"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="box-body">
-                                <div class="chart">
-                                    <div id="chartContainer" style="height: 370px; width:100%;"></div>
-                                </div>
-                            </div>
-                        </div>
-                </div>
-            </div>
-        </div>
-        <!-- Zamknięcie row -->
-
-    </div>
 </section>
