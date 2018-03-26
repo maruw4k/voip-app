@@ -32,18 +32,18 @@
         </a>
       </li>
 
-      <li ng-show="vm.can('manage.users')">
-        <a ui-sref='app.userlist'>
-          <i class="fa fa-child"></i> <span>Wszyscy użytkownicy (admin)</span>
+      <li>
+        <a ui-sref='app.profile'>
+          <i class="fa fa-gear"></i> <span>Ustawienia konta</span>
         </a>
       </li>
 
-
       <li class="treeview" ng-show="vm.can('manage.roles') || vm.can('manage.permissions')">
         <a href="javascript:void(0)">
-          <i class="fa fa-cog"></i> <span>Ustawienia</span> <i class="fa fa-angle-left pull-right"></i>
+          <i class="fa fa-gears"></i> <span>Ustawienia (admin)</span> <i class="fa fa-angle-left pull-right"></i>
         </a>
         <ul class="treeview-menu">
+          <li ng-show="vm.can('manage.roles')"><a ui-sref='app.userlist'><i class="fa fa-circle-o"></i> <span>Wszyscy użytkownicy</span></a></li>
           <li ng-show="vm.can('manage.roles')"><a ui-sref='app.userroles'><i class="fa fa-circle-o"></i> <span>Role</span></a></li>
           <li ng-show="vm.can('manage.permissions')"><a ui-sref='app.userpermissions'><i class="fa fa-circle-o"></i> <span>Uprawnienia</span></a></li>
         </ul>
