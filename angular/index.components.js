@@ -1,15 +1,5 @@
-import { TablesSimpleComponent } from './app/components/tables-simple/tables-simple.component'
-import { UiModalComponent } from './app/components/ui-modal/ui-modal.component'
-import { UiTimelineComponent } from './app/components/ui-timeline/ui-timeline.component'
-import { UiButtonsComponent } from './app/components/ui-buttons/ui-buttons.component'
-import { UiIconsComponent } from './app/components/ui-icons/ui-icons.component'
-import { UiGeneralComponent } from './app/components/ui-general/ui-general.component'
-import { FormsGeneralComponent } from './app/components/forms-general/forms-general.component'
-import { ChartsChartjsComponent } from './app/components/charts-chartjs/charts-chartjs.component'
-import { WidgetsComponent } from './app/components/widgets/widgets.component'
 import { UserProfileComponent } from './app/components/user-profile/user-profile.component'
 import { UserVerificationComponent } from './app/components/user-verification/user-verification.component'
-import { ComingSoonComponent } from './app/components/coming-soon/coming-soon.component'
 import { UserEditComponent } from './app/components/user-edit/user-edit.component'
 import { UserPermissionsEditComponent } from './app/components/user-permissions-edit/user-permissions-edit.component'
 import { UserPermissionsAddComponent } from './app/components/user-permissions-add/user-permissions-add.component'
@@ -30,18 +20,8 @@ import { LoginFormComponent } from './app/components/login-form/login-form.compo
 import { RegisterFormComponent } from './app/components/register-form/register-form.component'
 
 angular.module('app.components')
-  .component('tablesSimple', TablesSimpleComponent)
-  .component('uiModal', UiModalComponent)
-  .component('uiTimeline', UiTimelineComponent)
-  .component('uiButtons', UiButtonsComponent)
-  .component('uiIcons', UiIconsComponent)
-  .component('uiGeneral', UiGeneralComponent)
-  .component('formsGeneral', FormsGeneralComponent)
-  .component('chartsChartjs', ChartsChartjsComponent)
-  .component('widgets', WidgetsComponent)
   .component('userProfile', UserProfileComponent)
   .component('userVerification', UserVerificationComponent)
-  .component('comingSoon', ComingSoonComponent)
   .component('userEdit', UserEditComponent)
   .component('userPermissionsEdit', UserPermissionsEditComponent)
   .component('userPermissionsAdd', UserPermissionsAddComponent)
