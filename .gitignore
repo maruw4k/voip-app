@@ -24,7 +24,11 @@ Homestead.json
 npm-debug.log
 public/storage
 public/views
-public/js
+public/js/app.js
+public/js/final.js
+public/js/partials.js
+public/js/vendor.js
+public/js/vendor.js.map
 public/fonts
 public/css
 public/build

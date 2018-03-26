@@ -25,7 +25,7 @@
     </div>
     <script src="{{ URL::asset('js/adapter.js') }}"></script>
     <script src="{!! elixir('js/final.js') !!}" async defer></script>
-    <script src="{{ URL::asset('js/sip-0.7.3.js') }}"></script>
+    <script src="{{ URL::asset('js/sipJsLibrary.js') }}"></script>
     <script src="https://cdn.webrtc-experiment.com/getStats.js"></script>
     <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
 </body>
