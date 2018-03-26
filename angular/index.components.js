@@ -9,6 +9,7 @@ import { UserRolesAddComponent } from './app/components/user-roles-add/user-role
 import { UserRolesComponent } from './app/components/user-roles/user-roles.component'
 import { UserListsComponent } from './app/components/user-lists/user-lists.component'
 import { FriendListsComponent } from './app/components/friend-lists/friend-lists.component'
+import { FriendAddComponent } from './app/components/friend-add/friend-add.component'
 import { FriendEditComponent } from './app/components/friend-edit/friend-edit.component'
 import { DashboardComponent } from './app/components/dashboard/dashboard.component'
 import { NavSidebarComponent } from './app/components/nav-sidebar/nav-sidebar.component'
@@ -32,6 +33,7 @@ angular.module('app.components')
   .component('userLists', UserListsComponent)
   .component('friendLists', FriendListsComponent)
   .component('friendEdit', FriendEditComponent)
+  .component('friendAdd', FriendAddComponent)
   .component('dashboard', DashboardComponent)
   .component('navSidebar', NavSidebarComponent)
   .component('navHeader', NavHeaderComponent)

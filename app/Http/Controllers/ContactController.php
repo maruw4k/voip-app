@@ -37,6 +37,24 @@ class ContactController extends Controller
         $contact->delete();
         return response()->success('success');
     }
+
+    /**
+     * Create new friend.
+     *
+     * @return JSON
+     */
+    public function postContacts()
+    {
+        $user = Auth::user();
+        $contact = Contact::create([
+            'name' => Input::get('name'),
+            'sip_address' => Input::get('sip_address'),
+            'user_id' => $user->id,
+        ]);
+
+        return response()->success(compact('contact'));
+    }
+
     
 }
 

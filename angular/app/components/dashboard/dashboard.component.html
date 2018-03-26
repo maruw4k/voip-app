@@ -1,6 +1,5 @@
 <section class="content">
 
-
     <!-- Panel telefonu i status -->
     <div class="row">
         <div class="col-md-5">
@@ -58,6 +57,10 @@
             <div class="box box-danger">
                 <div class="box-header with-border">
                     <h3 class="box-title">Znajomi</h3>
+                    <span>&nbsp;&nbsp; </span>
+                    <button ui-sref='app.friendadd' type="button" class="btn btn-default">
+                        Dodaj znajomego&nbsp;&nbsp;&nbsp;<i class="fa fa-plus"></i>
+                    </button>
                     <div class="box-tools pull-right">
                         <button type="button" class="btn btn-box-tool" data-widget="collapse">
                             <i class="fa fa-minus"></i>
@@ -71,7 +74,7 @@
                     <ul class="users-list clearfix">
                         <li ng-repeat="contact in vm.friends">
                             <a href="#" ng-click="vm.clickContact(contact.sip_address)">
-                                <img src="/img/avatar04.png" alt="Zdjęcie znajomego">
+                                <img src="/img/avatar.png" alt="Zdjęcie znajomego">
                             </a>
                             <a class="users-list-name" ng-click="vm.clickContact(contact.sip_address)" href="#">
                                 {{contact.name}}

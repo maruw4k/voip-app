@@ -107,6 +107,20 @@ export function RoutesConfig ($stateProvider, $urlRouterProvider) {
         friendId: null
       }
     })
+    .state('app.friendadd', {
+      url: '/friend-add',
+      data: {
+        auth: true
+      },
+      views: {
+        'main@app': {
+          template: '<friend-add></friend-add>'
+        }
+      },
+      params: {
+        alerts: null
+      }
+    })
     .state('app.userroles', {
       url: '/user-roles',
       data: {
