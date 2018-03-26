@@ -25,24 +25,27 @@
           <i class="fa fa-dashboard"></i> <span>Panel główny</span>
         </a>
       </li>
-      <li class="treeview" ng-show="vm.can('manage.users')">
-        <a href="javascript:void(0)">
-          <i class="fa fa-users"></i> <span>Znajomi</span> <i class="fa fa-angle-left pull-right"></i>
+
+      <li>
+        <a ui-sref='app.friendlist'>
+          <i class="fa fa-users"></i> <span>Lista znajomych</span>
         </a>
-        <ul class="treeview-menu">
-          <li ng-show="vm.can('manage.users')" class="active"><a ui-sref='app.userlist'><i class="fa fa-circle-o"></i> <span>User List</span></a></li>
-        </ul>
-        <ul class="treeview-menu">
-          <li ng-show="vm.can('manage.users')" class="active"><a ui-sref='app.friendlist'><i class="fa fa-circle-o"></i> <span>Lista znajomych</span></a></li>
-        </ul>
       </li>
+
+      <li ng-show="vm.can('manage.users')">
+        <a ui-sref='app.userlist'>
+          <i class="fa fa-child"></i> <span>Wszyscy użytkownicy (admin)</span>
+        </a>
+      </li>
+
+
       <li class="treeview" ng-show="vm.can('manage.roles') || vm.can('manage.permissions')">
         <a href="javascript:void(0)">
           <i class="fa fa-cog"></i> <span>Ustawienia</span> <i class="fa fa-angle-left pull-right"></i>
         </a>
         <ul class="treeview-menu">
-          <li ng-show="vm.can('manage.roles')"><a ui-sref='app.userroles'><i class="fa fa-circle-o"></i> <span>User Roles</span></a></li>
-          <li ng-show="vm.can('manage.permissions')"><a ui-sref='app.userpermissions'><i class="fa fa-circle-o"></i> <span>User Permissions</span></a></li>
+          <li ng-show="vm.can('manage.roles')"><a ui-sref='app.userroles'><i class="fa fa-circle-o"></i> <span>Role</span></a></li>
+          <li ng-show="vm.can('manage.permissions')"><a ui-sref='app.userpermissions'><i class="fa fa-circle-o"></i> <span>Uprawnienia</span></a></li>
         </ul>
       </li>
   
