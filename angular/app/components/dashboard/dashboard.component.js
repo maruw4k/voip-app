@@ -30,8 +30,58 @@ class DashboardController {
             sessionTemplate: document.getElementById('session-template')
         };
 
-        console.log(elements);
         var sessionUIs = {};
+
+
+
+
+
+
+        var dps = []; // dataPoints
+        var chart = new CanvasJS.Chart("chartContainer", {
+            // title :{
+            //     text: "Przepustowość połączenia"
+            // },
+            axisY: {
+                includeZero: false
+            },      
+            data: [{
+                type: "line",
+                dataPoints: dps
+            }]
+        });
+        
+        var xVal = 0;
+        var yVal = 100; 
+        
+        this.updateChart = function (count, data) {
+            
+            count = count || 1;
+        
+            for (var j = 0; j < count; j++) {
+                yVal = data / 1000;
+                dps.push({
+                    x: xVal,
+                    y: yVal
+                });
+                xVal++;
+            }
+        
+            if (dps.length > 10) {
+                dps.shift();
+            }
+        
+            chart.render();
+        };
+        
+        _this.updateChart(10, 0);
+
+
+
+
+
+
+
 
         //Pobranie danych użytkownika i utworzenie agenta sip dla telefonu
         let UserData = API.service('me', API.all('users'))
@@ -361,6 +411,9 @@ class DashboardController {
                     getStats(session.mediaHandler.peerConnection, function(result)
                     {
                         _this.showStatistic(result);
+                        console.log(result);
+                        console.log('result.speed', result.bandwidth.speed);
+                        _this.updateChart(null, result.bandwidth.speed);
                     }, 1000);
                 });
 
@@ -369,24 +422,28 @@ class DashboardController {
                 });
 
                 session.on('bye', function () {
-                    getStatsResult.nomore();
+                    getStats.nomore();
 
                     sessionUI.green.disabled = false;
                     sessionUI.red.disabled = true;
                     sessionUI.dtmfInput.disable = true;
                     sessionUI.green.innerHTML = 'Zadzwoń';
                     sessionUI.red.innerHTML = '...';
+                    elements.endButton.classList.add('hide');
+                    sessionUI.video.classList.add('hide');
                     delete sessionUI.session;
                 });
 
                 session.on('failed', function () {
-                    getStatsResult.nomore();
+                    getStats.nomore();
 
                     sessionUI.green.disabled = false;
                     sessionUI.red.disabled = true;
                     sessionUI.dtmfInput.disable = true;
                     sessionUI.green.innerHTML = 'Zadzwoń';
                     sessionUI.red.innerHTML = '...';
+                    elements.endButton.classList.add('hide');
+                    sessionUI.video.classList.add('hide');
                     delete sessionUI.session;
                 });
 
