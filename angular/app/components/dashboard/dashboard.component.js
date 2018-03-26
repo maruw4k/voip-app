@@ -5,16 +5,16 @@ class DashboardController {
         this.API = API;
         var _this = this;
         var dataSet;
+        var rttMeasures = [];
         window.$scope = $scope;
 
         this.info = {
             status: 'Łączenie',
             textBtn: 'Zarejestruj',
-            bandwith: '(brak aktywnego połączenia)',
-            mos: '(brak aktywnego połączenia)',
+            bandwith: '(brak połączenia)',
+            mos: '(brak połączenia)',
         };
 
-        $scope.mos = 'niema';
         var ua;
 
         let sipConfig = {
@@ -23,16 +23,14 @@ class DashboardController {
         };
 
         var elements = {
-            newSessionForm: document.getElementById('newConnectForm'),
-            inviteButton: document.getElementById('inviteBtn'),
-            messageButton: document.getElementById('chatBtn'),
+            endButton: document.getElementById('end-btn'),
             uaVideo: document.getElementById('videoChkBox'),
             uaURI: document.getElementById('addressUriInput'),
             sessionList: document.getElementById('chatList'),
-            sessionTemplate: document.getElementById('session-template'),
-            messageTemplate: document.getElementById('message-template')
+            sessionTemplate: document.getElementById('session-template')
         };
 
+        console.log(elements);
         var sessionUIs = {};
 
         //Pobranie danych użytkownika i utworzenie agenta sip dla telefonu
@@ -52,10 +50,13 @@ class DashboardController {
                 });
 
                 ua.on('registered', function () {
-                    // var subscription = ua.subscribe('sip:1111@192.168.0.17', 'presence');
                     console.log('registered');
                     _this.info.status = 'Zarejestrowany';
 
+                });
+                ua.on('unregistered', function () {
+                    console.log('registered');
+                    _this.info.status = 'Niezarejestrowano';
                 });
 
                 ua.on('invite', function (session) {
@@ -78,18 +79,8 @@ class DashboardController {
             });
 
 
-
-        //Funkcja do przekzywania adresu sip do panelu telefonu
-        this.clickContact = function (contact) {
-            elements.uaURI.value = contact;
-
-            console.log(elements.uaVideo.checked);
-            console.log(elements.uaURI.value);
-        };
-
-
         //Logowanie/wylogowanie z serwera SIP
-        $scope.registerSIP = function () {
+        this.registerSIP = function () {
             if (!ua) return;
             if (ua.isRegistered()) {
                 _this.info.textBtn = 'Zarejestruj';
@@ -121,13 +112,17 @@ class DashboardController {
                 }
             });
             var ui = createNewSessionUI(uri, session);
-            console.log(ui, 'UI dupa');
-            console.log(session, 'session dupa');
-
         }
 
+        //Przekazywania adresu sip do panelu telefonu
+        this.clickContact = function (contact) {
+            elements.uaURI.value = contact;
 
-        //Funkcja otwierająca nowe okno wiadomości
+            console.log(elements.uaVideo.checked);
+            console.log(elements.uaURI.value);
+        };
+
+        //Otwieranie nowego okna wiadomości
         this.messageBtnClick = function () {
             console.log('Wysyłanie wiadomości');
             var uri = elements.uaURI.value;
@@ -136,14 +131,78 @@ class DashboardController {
         }
 
 
-
-
-        //Funkcja otwierająca nowe okno wiadomości
-        this.showStatistic = function () {
-
-            _this.info.bandwith = 'ELO';
+        //Liczenie średniej z tablicy
+        this.calculateAverage = function (values) {
+            var sumValues = values.reduce(function (sum, value) {
+                return sum + value;
+            }, 0);
+            return (sumValues / values.length);
         }
 
+
+        //Liczenie poziomu jakości
+        this.calculateMos = function (avgRtt) {
+            var emodel = 0;
+            if (avgRtt === null || avgRtt) {
+                avgRtt = 0;
+            }
+
+            if (avgRtt / 2 >= 500)
+                emodel = 1;
+            else if (avgRtt / 2 >= 400)
+                emodel = 2;
+            else if (avgRtt / 2 >= 300)
+                emodel = 3;
+            else if (avgRtt / 2 >= 200)
+                emodel = 4;
+            else if (avgRtt / 2 < 200)
+                emodel = 5;
+            return emodel;
+        }
+
+        //Pokazywanie statystyk
+        this.showStatistic = function (result) {
+            console.log('rezultat metody GetStat', result);
+            document.getElementById('bandwith').innerHTML = _this.bytesToSize(result.bandwidth.speed);
+            document.getElementById('codecsSend').innerHTML = result.audio.send.codecs.concat(result.video.send.codecs).join(', ');
+            document.getElementById('codecsRecv').innerHTML = result.audio.recv.codecs.concat(result.video.recv.codecs).join(', ');
+            document.getElementById('encryption').innerHTML = result.encryption;
+            document.getElementById('resolutionSend').innerHTML = result.resolutions.send.width + 'x' + result.resolutions.send.height;
+            document.getElementById('resolutionRecv').innerHTML = result.resolutions.recv.width + 'x' + result.resolutions.recv.height;
+            document.getElementById('sendDate').innerHTML = _this.bytesToSize(result.audio.bytesSent + result.video.bytesSent);
+            document.getElementById('recDate').innerHTML = _this.bytesToSize(result.audio.bytesReceived + result.video.bytesReceived);
+
+            for (var i in result.results) {
+                var now = result.results[i];
+
+                if (now.type == 'ssrc') {
+                    console.log('now.ssrc', now.googRtt);
+                    rttMeasures.push(now.googRtt);
+                    var avgRtt = _this.calculateAverage(rttMeasures);
+                    console.log('avgrtt', avgRtt);
+
+                    _this.calculateMos(avgRtt);
+                    document.getElementById('mos').innerHTML = _this.calculateMos(avgRtt).toString();
+                    document.getElementById('mos-progress').style.width = _this.calculateMos(avgRtt).toString + '0%';
+                }
+            }
+        }
+
+        //Zamiena bajty na łatwe do odczytania wartości
+        this.bytesToSize = function (bytes) {
+            var k = 1000;
+            var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+            if (bytes <= 0) {
+                return '0 Bytes';
+            }
+            var i = parseInt(Math.floor(Math.log(bytes) / Math.log(k)), 10);
+
+            if (!sizes[i]) {
+                return '0 Bytes';
+            }
+
+            return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
+        }
 
 
         //Tworzenie GUI okienka rozmowy
@@ -215,16 +274,24 @@ class DashboardController {
                         console.log(session, 'SESJA po 333333333333333333333');
 
 
-
-
-
-
-
                     }, 5000);
                 }
             }, false);
 
             sessionUI.red.addEventListener('click', function () {
+                var session = sessionUI.session;
+                if (!session) {
+                    return;
+                } else if (session.startTime) { // Connected
+                    session.bye();
+                } else if (session.reject) { // Incoming
+                    session.reject();
+                } else if (session.cancel) { // Outbound
+                    session.cancel();
+                }
+            }, false);
+
+            elements.endButton.addEventListener('click', function () {
                 var session = sessionUI.session;
                 if (!session) {
                     return;
@@ -283,82 +350,18 @@ class DashboardController {
                     sessionUI.green.innerHTML = '...';
                     sessionUI.red.innerHTML = 'Koniec';
                     sessionUI.dtmfInput.disabled = false;
+                    elements.endButton.style.display = "inline-block";
 
                     session.mediaHandler.render(sessionUI.renderHint);
 
                     console.log(session, 'session.mediaHandler. SESJA');
-
-
-                    var rttMeasures = [];
-
-
                     console.log(session.mediaHandler.peerConnection, 'SESJA po 323423');
 
-                    getStats(session.mediaHandler.peerConnection, function (result) {
-                        console.log('rezultat', result);
-                        document.getElementById('bandwith').innerHTML = bytesToSize(result.bandwidth.speed);
-                        document.getElementById('codecsSend').innerHTML = result.audio.send.codecs.concat(result.video.send.codecs).join(', ');
-                        document.getElementById('codecsRecv').innerHTML = result.audio.recv.codecs.concat(result.video.recv.codecs).join(', ');
-                        document.getElementById('encryption').innerHTML = result.encryption;
-                        document.getElementById('resolutionSend').innerHTML = result.resolutions.send.width + 'x' + result.resolutions.send.height;
-                        document.getElementById('resolutionRecv').innerHTML = result.resolutions.recv.width + 'x' + result.resolutions.recv.height;
-                        document.getElementById('sendDate').innerHTML = bytesToSize(result.audio.bytesSent + result.video.bytesSent);
-                        document.getElementById('recDate').innerHTML = bytesToSize(result.audio.bytesReceived + result.video.bytesReceived);
-
-                        for (var i in result.results) {
-                            var now = result.results[i];
-
-                            if (now.type == 'googCandidatePair') {
-                                // console.log('now',now);
-                                console.log('now.googRtt', now.googRtt);
-                                rttMeasures.push(now.googRtt);
-                                var avgRtt = average(rttMeasures);
-                                console.log('avgrtt', avgRtt);
-
-                                if (avgRtt === null) {
-                                    avgRtt = 0;
-                                }
-
-                                var emodel = 0;
-                                if (avgRtt / 2 >= 500)
-                                    emodel = 1;
-                                else if (avgRtt / 2 >= 400)
-                                    emodel = 2;
-                                else if (avgRtt / 2 >= 300)
-                                    emodel = 3;
-                                else if (avgRtt / 2 >= 200)
-                                    emodel = 4;
-                                else if (avgRtt / 2 < 200)
-                                    emodel = 5;
-
-                                document.getElementById('mos').innerHTML = emodel.toString();
-                                document.getElementById('mos-progress').style.width = emodel.toString() + '0%';
-                            }
-                        }
+                    //Pobieranie statystyk połączenia i wyświetlenie ich
+                    getStats(session.mediaHandler.peerConnection, function(result)
+                    {
+                        _this.showStatistic(result);
                     }, 1000);
-
-                    function average(values) {
-                        var sumValues = values.reduce(function (sum, value) {
-                            return sum + value;
-                        }, 0);
-                        return (sumValues / values.length);
-                    }
-
-                    function bytesToSize(bytes) {
-                        var k = 1000;
-                        var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-                        if (bytes <= 0) {
-                            return '0 Bytes';
-                        }
-                        var i = parseInt(Math.floor(Math.log(bytes) / Math.log(k)), 10);
-
-                        if (!sizes[i]) {
-                            return '0 Bytes';
-                        }
-
-                        return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
-                    }
-
                 });
 
                 session.mediaHandler.on('addStream', function () {
@@ -366,6 +369,8 @@ class DashboardController {
                 });
 
                 session.on('bye', function () {
+                    getStatsResult.nomore();
+
                     sessionUI.green.disabled = false;
                     sessionUI.red.disabled = true;
                     sessionUI.dtmfInput.disable = true;
@@ -375,6 +380,8 @@ class DashboardController {
                 });
 
                 session.on('failed', function () {
+                    getStatsResult.nomore();
+
                     sessionUI.green.disabled = false;
                     sessionUI.red.disabled = true;
                     sessionUI.dtmfInput.disable = true;
@@ -403,9 +410,9 @@ class DashboardController {
             }
 
 
-
-            // Wstawianie pojedyńczej wiadomości do konwersacji
+            // Wstawianie pojedyńczej wiadomości do listy konwersacji
             function appendMessage(body, sender) {
+
                 //Zmienne do aktualnego czasu
                 var d = new Date();
                 var n = d.toLocaleTimeString();
