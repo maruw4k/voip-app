@@ -1,7 +1,7 @@
 {
-    "name": "Laravel Angular Admin",
-    "description": "Laravel + Angularjs + Bootstrap + AdminLTE binded by Gulp workflow Admin Dashboard Boilerplate",
-    "keywords": ["laravel", "angular", "bootstrap", "admin", "admin template", "ui-router", "api", "angular-bootstrap"],
+    "name": "Voip klient",
+    "description": "Praca inżynierska",
+    "keywords": ["laravel", "angular", "bootstrap", "admin", "ui-router", "api", "angular-bootstrap", "voip", "sip"],
     "license": "MIT",
     "type": "project",
     "require": {
@@ -41,7 +41,6 @@
         ],
         "post-create-project-cmd": [
            "php -r \"unlink('code_of_conduct.md');\"",
-           "php -r \"unlink('CHANGELOG.md');\"",
            "php -r \"unlink('.codeclimate.yml');\"",
            "php -r \"unlink('.travis.yml');\"",
            "php artisan key:generate",
