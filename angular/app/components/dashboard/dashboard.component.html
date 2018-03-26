@@ -34,9 +34,7 @@
                             <button type="button" class="btn btn-success btn-flat" ng-click="vm.inviteBtnClick()">Zadzwoń&nbsp;
                                 <span class="glyphicon glyphicon-earphone"></span>
                             </button>
-                            <button type="button" id="end-btn" class="btn btn-danger btn-flat hide">Zakończ rozmowę&nbsp;
-                                <span class="glyphicon glyphicon-earphone"></span>
-                            </button>
+
                             <button id="chatBtn" class="btn btn-info btn-flat" ng-click="vm.messageBtnClick()">Wyślij Wiadomość&nbsp;
                                 <span class="glyphicon glyphicon-comment"></span>
                             </button>
@@ -75,7 +73,11 @@
                             <a href="#" ng-click="vm.clickContact(contact.sip_address)">
                                 <img src="/img/avatar04.png" alt="Zdjęcie znajomego">
                             </a>
-                            <a class="users-list-name" ng-click="vm.clickContact(contact.sip_address)" href="#">{{contact.name}}</a>
+                            <a class="users-list-name" ng-click="vm.clickContact(contact.sip_address)" href="#">
+                                {{contact.name}}
+                                &nbsp;
+                                <span id="dot-{{contact.id}}" class="avaliable-dot"></span>
+                            </a>
                             <span class="users-list-date">{{contact.sip_address}}</span>
                         </li>
                     </ul>

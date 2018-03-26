@@ -1,5 +1,5 @@
 class DashboardController {
-    constructor($scope, API) {
+    constructor($scope, $timeout, API) {
         'ngInject'
 
         //Pomocnicze
@@ -24,8 +24,8 @@ class DashboardController {
 
         //User Agent klienta SIP
         var ua;
-        //Obiekt trzymający pojedyńczą sesję
-        var sessionUIs = {};
+        //Obiekt trzymający sesje
+        var sessionWindows = {};
 
         let sipConfig = {
             traceSip: true,
@@ -34,7 +34,6 @@ class DashboardController {
 
         //Obiekt z wiązaniami do elementów dom
         var elements = {
-            endButton: document.getElementById('end-btn'),
             uaVideo: document.getElementById('videoChkBox'),
             uaURI: document.getElementById('addressUriInput'),
             sessionList: document.getElementById('chatList'),
@@ -55,8 +54,6 @@ class DashboardController {
         });
         var xVal = 0;
         var yVal = 100;
-
-
 
         //Rysowanie wykresu przepustowości
         this.updateChart = function (count, data) {
@@ -92,6 +89,7 @@ class DashboardController {
             }).then(() => {
                 ua = new SIP.UA(sipConfig);
 
+                //Ustawienie listenerów do nasłuchiwania sygnałów
                 ua.on('connected', function () {
                     console.log('Connected');
                     _this.info.status = 'Połączony';
@@ -102,23 +100,25 @@ class DashboardController {
                     console.log('Registered');
                     _this.info.textBtn = 'Wyloguj';
                     _this.info.status = 'Zarejestrowano';
-
+                    $scope.$apply();
                 });
+
                 ua.on('unregistered', function () {
-                    console.log('registered');
+                    console.log('Niezarejestrowano');
                     _this.info.textBtn = 'Zarejestruj';
                     _this.info.status = 'Niezarejestrowano';
+                    $scope.$apply();
                 });
 
                 ua.on('invite', function (session) {
                     console.log('Zaproszenie');
-                    createNewSessionUI(session.remoteIdentity.uri, session);
+                    createNewsessionWindow(session.remoteIdentity.uri, session);
                 });
 
                 ua.on('message', function (message) {
                     console.log('Wiadomość przyszła');
-                    if (!sessionUIs[message.remoteIdentity.uri]) {
-                        createNewSessionUI(message.remoteIdentity.uri, null, message);
+                    if (!sessionWindows[message.remoteIdentity.uri]) {
+                        createNewsessionWindow(message.remoteIdentity.uri, null, message);
                     }
                 });
             });
@@ -127,18 +127,46 @@ class DashboardController {
         let Friends = this.API.all('contacts');
         Friends.getList()
             .then((response) => {
-                _this.friends = response.plain()
+                _this.friends = response.plain();
+
+                //Użycie timeout by wykonało się kiedy angular wyrenderuje DOM
+                $timeout(function () {
+                    _this.setSubscription(_this.friends)
+                });
+
             });
+
+
+        //Ustawienie subskrypcji na użytkownikach i reakcje na powiadomienia
+        this.setSubscription = function (friends) {
+            if (!ua) return;
+            console.log(friends, 'Znajomi');
+
+            var subscription = [];
+            for (var j = 0; j < friends.length; j++) {
+                console.log('Subskrypcja: ', friends[j].sip_address);
+                var id = 'dot-' + friends[j].id;
+                document.getElementById(id).style.backgroundColor = "gray";
+
+                subscription[j] = ua.subscribe(friends[j].sip_address, 'presence');
+                subscription[j].on('notify', function (notification) {
+                    document.getElementById(id).style.backgroundColor = "green";
+                });
+            }
+        }
+
+
 
         //Logowanie/wylogowanie z serwera SIP
         this.registerSIP = function () {
             if (!ua) return;
             if (ua.isRegistered()) {
+                console.log(ua.isRegistered());
                 ua.unregister();
                 console.log('Wylogowano2');
             } else {
-                ua.register();
                 console.log(ua.isRegistered());
+                ua.register();
                 console.log('Zarejestrowano2');
             }
         };
@@ -158,18 +186,15 @@ class DashboardController {
                     },
                 }
             });
-            var ui = createNewSessionUI(uri, session);
+            var ui = createNewsessionWindow(uri, session);
         }
 
-        //Przekazywania adresu sip do panelu telefonu
+        //Przekazywanie adresu sip do panelu telefonu
         this.clickContact = function (contact) {
             elements.uaURI.value = contact;
 
             console.log(elements.uaVideo.checked);
             console.log(elements.uaURI.value);
-
-            console.log(ua, 'UAAAAAAAAAAAAAAAA');
-            console.log(_this.ua, 'UAAAAAAAAAAAAAAAA')
         };
 
         //Otwieranie nowego okna wiadomości
@@ -177,7 +202,7 @@ class DashboardController {
             console.log('Wysyłanie wiadomości');
             var uri = elements.uaURI.value;
             elements.uaURI.value = '';
-            var ui = createNewSessionUI(uri);
+            var ui = createNewsessionWindow(uri);
         }
 
 
@@ -212,7 +237,6 @@ class DashboardController {
 
         //Pokazywanie statystyk
         this.showStatistic = function (result) {
-            console.log('rezultat metody GetStat', result);
             document.getElementById('bandwith').innerHTML = _this.bytesToSize(result.bandwidth.speed);
             document.getElementById('codecsSend').innerHTML = result.audio.send.codecs.concat(result.video.send.codecs).join(', ');
             document.getElementById('codecsRecv').innerHTML = result.audio.recv.codecs.concat(result.video.recv.codecs).join(', ');
@@ -256,10 +280,10 @@ class DashboardController {
 
 
         //Tworzenie GUI okienka rozmowy
-        function createNewSessionUI(uri, session, message) {
+        function createNewsessionWindow(uri, session, message) {
             var tpl = elements.sessionTemplate;
             var node = tpl.cloneNode(true);
-            var sessionUI = {};
+            var sessionWindow = {};
             var messageNode;
 
             uri = session ?
@@ -271,32 +295,32 @@ class DashboardController {
                 return;
             }
 
-            // Zapisywanie danych do obiektu sessionUI by mieć późniejszy dostęp
-            sessionUI.session = session;
-            sessionUI.node = node;
-            sessionUI.displayName = node.querySelector('.display-name');
-            sessionUI.uri = node.querySelector('.uri');
-            sessionUI.green = node.querySelector('.green');
-            sessionUI.red = node.querySelector('.red');
-            sessionUI.dtmf = node.querySelector('.dtmf');
-            sessionUI.dtmfInput = node.querySelector('.dtmf input[type="text"]');
-            sessionUI.video = node.querySelector('video');
-            sessionUI.messages = node.querySelector('.messages');
-            sessionUI.messageForm = node.querySelector('.messageForm');
-            sessionUI.messageInput = node.querySelector('.messageForm input[type="text"]');
-            sessionUI.renderHint = {
-                remote: sessionUI.video
+            // Zapisywanie danych do obiektu sessionWindow by mieć późniejszy dostęp
+            sessionWindow.session = session;
+            sessionWindow.node = node;
+            sessionWindow.displayName = node.querySelector('.display-name');
+            sessionWindow.uri = node.querySelector('.uri');
+            sessionWindow.green = node.querySelector('.green');
+            sessionWindow.red = node.querySelector('.red');
+            sessionWindow.dtmf = node.querySelector('.dtmf');
+            sessionWindow.dtmfInput = node.querySelector('.dtmf input[type="text"]');
+            sessionWindow.video = node.querySelector('video');
+            sessionWindow.messages = node.querySelector('.messages');
+            sessionWindow.messageForm = node.querySelector('.messageForm');
+            sessionWindow.messageInput = node.querySelector('.messageForm input[type="text"]');
+            sessionWindow.renderHint = {
+                remote: sessionWindow.video
             };
 
-            sessionUIs[uri] = sessionUI;
+            sessionWindows[uri] = sessionWindow;
 
             // Aktualizacja szablonu
             node.classList.remove('template');
-            sessionUI.displayName.textContent = displayName || uri.user;
-            sessionUI.uri.textContent = '(' + uri + ')';
+            sessionWindow.displayName.textContent = displayName || uri.user;
+            sessionWindow.uri.textContent = '(' + uri + ')';
 
-            // DOM event listeners
-            sessionUI.green.addEventListener('click', function () {
+            // Ustawienie listenerów na przyciski w oknie rozmowy
+            sessionWindow.green.addEventListener('click', function () {
                 var video = elements.uaVideo.checked;
                 var options = {
                     media: {
@@ -307,145 +331,125 @@ class DashboardController {
                     }
                 };
 
-                var session = sessionUI.session;
+                var session = sessionWindow.session;
                 if (!session) {
-                    /* TODO - Invite new session */
-                    /* Don't forget to enable buttons */
-                    session = sessionUI.session = ua.invite(uri, options);
+                    session = sessionWindow.session = ua.invite(uri, options);
 
                     setUpListeners(session);
-                } else if (session.accept && !session.startTime) { // Incoming, not connected
+                } else if (session.accept && !session.startTime) { // W przypadku gdy połączenie nadchodzi ale nie zaczęło się sesji
                     session.accept(options);
 
-                    console.log(session, 'SESJA po zakończeniu');
                 }
             }, false);
 
-            sessionUI.red.addEventListener('click', function () {
-                var session = sessionUI.session;
+            sessionWindow.red.addEventListener('click', function () {
+                var session = sessionWindow.session;
                 if (!session) {
                     return;
-                } else if (session.startTime) { // Connected
+                } else if (session.startTime) {
                     session.bye();
-                } else if (session.reject) { // Incoming
+                } else if (session.reject) {
                     session.reject();
-                } else if (session.cancel) { // Outbound
+                } else if (session.cancel) {
                     session.cancel();
                 }
             }, false);
 
-            elements.endButton.addEventListener('click', function () {
-                var session = sessionUI.session;
-                if (!session) {
-                    return;
-                } else if (session.startTime) { // Connected
-                    session.bye();
-                } else if (session.reject) { // Incoming
-                    session.reject();
-                } else if (session.cancel) { // Outbound
-                    session.cancel();
-                }
-            }, false);
-
-            sessionUI.dtmf.addEventListener('submit', function (e) {
+            sessionWindow.dtmf.addEventListener('submit', function (e) {
                 e.preventDefault();
 
-                var value = sessionUI.dtmfInput.value;
+                var value = sessionWindow.dtmfInput.value;
                 if (value === '' || !session) return;
 
-                sessionUI.dtmfInput.value = '';
+                sessionWindow.dtmfInput.value = '';
 
                 if (['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '*', '#'].indexOf(value) > -1) {
                     session.dtmf(value);
                 }
             });
 
-            // Initial DOM state
+            // Ustawienie przycisków
             if (session && !session.accept) {
-                sessionUI.green.disabled = true;
-                sessionUI.green.innerHTML = '...';
-                sessionUI.red.innerHTML = 'Anuluj';
+                sessionWindow.green.disabled = true;
+                sessionWindow.green.innerHTML = '...';
+                sessionWindow.red.innerHTML = 'Anuluj';
             } else if (!session) {
-                sessionUI.red.disabled = true;
-                sessionUI.green.innerHTML = 'Zadzwoń';
-                sessionUI.red.innerHTML = '...';
+                sessionWindow.red.disabled = true;
+                sessionWindow.green.innerHTML = 'Zadzwoń';
+                sessionWindow.red.innerHTML = '...';
             } else {
-                sessionUI.green.innerHTML = 'Odbierz';
-                sessionUI.red.innerHTML = 'Odrzuć';
+                sessionWindow.green.innerHTML = 'Odbierz';
+                sessionWindow.red.innerHTML = 'Odrzuć';
             }
-            sessionUI.dtmfInput.disabled = true;
+            sessionWindow.dtmfInput.disabled = true;
 
-            // SIP.js event listeners
+
             function setUpListeners(session) {
-                sessionUI.red.disabled = false;
+                sessionWindow.red.disabled = false;
 
                 if (session.accept) {
-                    sessionUI.green.disabled = false;
-                    sessionUI.green.innerHTML = 'Odbierz';
-                    sessionUI.red.innerHTML = 'Odrzuć';
+                    sessionWindow.green.disabled = false;
+                    sessionWindow.green.innerHTML = 'Odbierz';
+                    sessionWindow.red.innerHTML = 'Odrzuć';
                 } else {
-                    sessionUI.green.innerHMTL = '...';
-                    sessionUI.red.innerHTML = 'Anuluj';
+                    sessionWindow.green.innerHMTL = '...';
+                    sessionWindow.red.innerHTML = 'Anuluj';
                 }
 
                 session.on('accepted', function () {
-                    sessionUI.green.disabled = true;
-                    sessionUI.green.innerHTML = '...';
-                    sessionUI.red.innerHTML = 'Koniec';
-                    sessionUI.dtmfInput.disabled = false;
-                    sessionUI.video.className = 'on';
-                    elements.endButton.style.display = "inline-block";
+                    sessionWindow.green.disabled = true;
+                    sessionWindow.green.innerHTML = '...';
+                    sessionWindow.red.innerHTML = 'Koniec';
+                    sessionWindow.dtmfInput.disabled = false;
+                    sessionWindow.video.className = 'on';
 
-                    session.mediaHandler.render(sessionUI.renderHint);
+                    session.mediaHandler.render(sessionWindow.renderHint);
 
                     console.log(session, 'session.mediaHandler. SESJA');
-                    console.log(session.mediaHandler.peerConnection, 'SESJA po 323423');
 
                     //Pobieranie statystyk połączenia i wyświetlenie ich
                     getStats(session.mediaHandler.peerConnection, function (result) {
                         _this.showStatistic(result);
-                        console.log(result);
-                        console.log('result.speed', result.bandwidth.speed);
                         _this.updateChart(null, result.bandwidth.speed);
                     }, 1000);
+
+
                 });
 
                 session.mediaHandler.on('addStream', function () {
-                    session.mediaHandler.render(sessionUI.renderHint);
+                    session.mediaHandler.render(sessionWindow.renderHint);
                 });
 
                 session.on('bye', function () {
-                    window.getStats.nomore();
+                    getStats.nomore();
 
-                    sessionUI.green.disabled = false;
-                    sessionUI.red.disabled = true;
-                    sessionUI.dtmfInput.disable = true;
-                    sessionUI.green.innerHTML = 'Zadzwoń';
-                    sessionUI.red.innerHTML = '...';
-                    elements.endButton.classList.add('hide');
-                    sessionUI.video.className = '';
-                    delete sessionUI.session;
+                    sessionWindow.green.disabled = false;
+                    sessionWindow.red.disabled = true;
+                    sessionWindow.dtmfInput.disable = true;
+                    sessionWindow.green.innerHTML = 'Zadzwoń';
+                    sessionWindow.red.innerHTML = '...';
+                    sessionWindow.video.className.remove = 'on';
+                    delete sessionWindow.session;
                 });
 
                 session.on('failed', function () {
                     window.getStats.nomore();
 
-                    sessionUI.green.disabled = false;
-                    sessionUI.red.disabled = true;
-                    sessionUI.dtmfInput.disable = true;
-                    sessionUI.green.innerHTML = 'Zadzwoń';
-                    sessionUI.red.innerHTML = '...';
-                    sessionUI.video.className = '';
-                    elements.endButton.classList.add('hide');
-                    sessionUI.video.classList.add('hide');
-                    delete sessionUI.session;
+                    sessionWindow.green.disabled = false;
+                    sessionWindow.red.disabled = true;
+                    sessionWindow.dtmfInput.disable = true;
+                    sessionWindow.green.innerHTML = 'Zadzwoń';
+                    sessionWindow.red.innerHTML = '...';
+                    sessionWindow.video.className = '';
+                    sessionWindow.video.className.remove = 'on';
+                    delete sessionWindow.session;
                 });
 
                 session.on('refer', function handleRefer(request) {
                     var target = request.parseHeader('refer-to').uri;
                     session.bye();
 
-                    createNewSessionUI(target, ua.invite(target, {
+                    createNewsessionWindow(target, ua.invite(target, {
                         media: {
                             constraints: {
                                 audio: true,
@@ -479,8 +483,8 @@ class DashboardController {
                     messageNode.className = 'direct-chat-msg';
                     messageNode.innerHTML = '  <div class="direct-chat-info clearfix"> <span class="direct-chat-name pull-left display-name">Ja</span> <span class="direct-chat-timestamp pull-right"> ' + n + ' </span></div><img class="direct-chat-img" src="/img/user1-128x128.jpg" alt="message user image"><div class="direct-chat-text">' + body + ' </div>';
                 }
-                sessionUI.messages.appendChild(messageNode);
-                sessionUI.messages.scrollTop = sessionUI.messages.scrollHeight;
+                sessionWindow.messages.appendChild(messageNode);
+                sessionWindow.messages.scrollTop = sessionWindow.messages.scrollHeight;
             }
 
             if (message) {
@@ -493,11 +497,11 @@ class DashboardController {
 
 
             //Wysłanie wiadomości na czacie
-            sessionUI.messageForm.addEventListener('submit', function (e) {
+            sessionWindow.messageForm.addEventListener('submit', function (e) {
                 e.preventDefault();
 
-                var body = sessionUI.messageInput.value;
-                sessionUI.messageInput.value = '';
+                var body = sessionWindow.messageInput.value;
+                sessionWindow.messageInput.value = '';
 
                 ua.message(uri, body).on('failed', function (response, cause) {
                     appendMessage('Błąd podczas wysyłania wiadomości: ' + (cause || 'Nieznany error'), 'błąd');
