@@ -25,8 +25,12 @@ class ContactController extends Controller
     public function getIndex()
     {
         $user = Auth::user();
-        // $contact = Contact::all()->where('id', $user->id );
-        $contacts = Contact::all();
+        // $contact = Contact::all()->where('user_id', $user->id )->get();
+        // $contacts = Contact::all();
+        $contacts = Contact::where('user_id',  $user->id)->get();
+
+        
+
 
         return response()->success(compact('contacts'));
     }
