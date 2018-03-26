@@ -47,22 +47,22 @@ class DashboardController {
         var chart = new CanvasJS.Chart("chartContainer", {
             axisY: {
                 includeZero: false
-            },      
+            },
             data: [{
                 type: "line",
                 dataPoints: dps
             }]
         });
         var xVal = 0;
-        var yVal = 100; 
+        var yVal = 100;
 
 
 
         //Rysowanie wykresu przepustowości
         this.updateChart = function (count, data) {
-            
+
             count = count || 1;
-        
+
             for (var j = 0; j < count; j++) {
                 yVal = data / 1000;
                 dps.push({
@@ -71,11 +71,11 @@ class DashboardController {
                 });
                 xVal++;
             }
-        
+
             if (dps.length > 10) {
                 dps.shift();
             }
-        
+
             chart.render();
         };
         _this.updateChart(10, 0);
@@ -95,15 +95,18 @@ class DashboardController {
                 ua.on('connected', function () {
                     console.log('Connected');
                     _this.info.status = 'Połączony';
+                    _this.info.textBtn = 'Zarejestruj';
                 });
 
                 ua.on('registered', function () {
-                    console.log('registered');
-                    _this.info.status = 'Zarejestrowany';
+                    console.log('Registered');
+                    _this.info.textBtn = 'Wyloguj';
+                    _this.info.status = 'Zarejestrowano';
 
                 });
                 ua.on('unregistered', function () {
                     console.log('registered');
+                    _this.info.textBtn = 'Zarejestruj';
                     _this.info.status = 'Niezarejestrowano';
                 });
 
@@ -127,20 +130,16 @@ class DashboardController {
                 _this.friends = response.plain()
             });
 
-
         //Logowanie/wylogowanie z serwera SIP
         this.registerSIP = function () {
             if (!ua) return;
             if (ua.isRegistered()) {
-                _this.info.textBtn = 'Zarejestruj';
                 ua.unregister();
-                _this.info.status = 'Wylogowano';
-                console.log('Wylogowano');
+                console.log('Wylogowano2');
             } else {
-                _this.info.textBtn = 'Wyloguj';
                 ua.register();
-                _this.info.status = 'Zarejestrowano';
-                console.log('Zarejestrowano');
+                console.log(ua.isRegistered());
+                console.log('Zarejestrowano2');
             }
         };
 
@@ -168,6 +167,9 @@ class DashboardController {
 
             console.log(elements.uaVideo.checked);
             console.log(elements.uaURI.value);
+
+            console.log(ua, 'UAAAAAAAAAAAAAAAA');
+            console.log(_this.ua, 'UAAAAAAAAAAAAAAAA')
         };
 
         //Otwieranie nowego okna wiadomości
@@ -400,8 +402,7 @@ class DashboardController {
                     console.log(session.mediaHandler.peerConnection, 'SESJA po 323423');
 
                     //Pobieranie statystyk połączenia i wyświetlenie ich
-                    getStats(session.mediaHandler.peerConnection, function(result)
-                    {
+                    getStats(session.mediaHandler.peerConnection, function (result) {
                         _this.showStatistic(result);
                         console.log(result);
                         console.log('result.speed', result.bandwidth.speed);

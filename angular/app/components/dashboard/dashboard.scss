@@ -30,16 +30,7 @@ li {
     text-align: center;
 }
 
-// .session video {
-//     display: block;
-//     visibility: none;
-//     height: 0;
-//     max-width: 100%;
-// }
-// .session video.on {
-//     visiblity: visible;
-//     height: auto;
-// }
+
 .session .messages {
     max-height: 10em;
     min-height: 2em;
@@ -92,4 +83,9 @@ input {
 
 input[type=checkbox] {
     height: auto;
+}
+
+.checkbox {
+    display: inline-block !important;
+    padding-left: 5%;
 }
