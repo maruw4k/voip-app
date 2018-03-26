@@ -1,39 +1,31 @@
-
-input[type=submit], button, button.green {
-    background-color: #35f659;
-    border: 0px;
-    height: 3em;
-    cursor: pointer;
-}
-
-
-button.red {
-    background-color: #ea4b35;
-}
-
-ul, li {
+ul,
+li {
     list-style: none;
     padding: 0;
 }
-
 
 .session {
     clear: both;
     display: block;
     text-align: center;
+    video {
+        display: none;
+        width: 100%;
+    }
 }
 
-
-.hide {
-    display: none;
+.on {
+    display: block !important;
+    height: 100%;
 }
 
-.session .dtmf, .session .dtmf *{
+.session .dtmf,
+.session .dtmf * {
     display: inline-block;
 }
 
 .session .dtmf input[type="text"] {
-    width: 5em;
+    width: 3em;
     min-width: 0em;
     text-align: center;
 }
@@ -44,12 +36,10 @@ ul, li {
 //     height: 0;
 //     max-width: 100%;
 // }
-
 // .session video.on {
 //     visiblity: visible;
 //     height: auto;
 // }
-
 .session .messages {
     max-height: 10em;
     min-height: 2em;
@@ -65,7 +55,8 @@ ul, li {
     margin-right: 10%;
 }
 
-.session .messages .remote, .session .messages .error {
+.session .messages .remote,
+.session .messages .error {
     color: #00a53b;
     clear: right;
     float: left;
@@ -82,29 +73,23 @@ ul, li {
     display: none;
 }
 
-
 #dtmf-buttons button {
-  display: inline-block;
-  margin: 1em 0 0 0;
-  height: 3.8em;
-  width: 3.8em;
-  background-color: white;
-  border: 1px solid black;
-  border-radius: 2px;
-  font-size: 1em;
+    display: inline-block;
+    margin: 1em 0 0 0;
+    height: 3.8em;
+    width: 3.8em;
+    background-color: white;
+    border: 1px solid black;
+    border-radius: 2px;
+    font-size: 1em;
 }
 
 input {
-  border-radius: 2px;
-  border: 0px;
-  height: 3em;
-}
-
-input[type=submit] {
-  background-color: #35f659;
-  border: 0px;
+    border-radius: 2px;
+    border: 0px;
+    height: 3em;
 }
 
 input[type=checkbox] {
-  height: auto;
+    height: auto;
 }

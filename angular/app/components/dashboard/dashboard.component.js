@@ -2,12 +2,19 @@ class DashboardController {
     constructor($scope, API) {
         'ngInject'
 
+        //Pomocnicze
         this.API = API;
         var _this = this;
-        var dataSet;
-        var rttMeasures = [];
+        //Do łatwiejszego debugowania
         window.$scope = $scope;
 
+
+        //Trzyma dane przyjaciół z bazy
+        var friends;
+        //Tablica do przechowywania wartości rtt z RTCP
+        var rttMeasures = [];
+
+        //Obiekt z informacjami do wyświetlenia
         this.info = {
             status: 'Łączenie',
             textBtn: 'Zarejestruj',
@@ -15,13 +22,17 @@ class DashboardController {
             mos: '(brak połączenia)',
         };
 
+        //User Agent klienta SIP
         var ua;
+        //Obiekt trzymający pojedyńczą sesję
+        var sessionUIs = {};
 
         let sipConfig = {
             traceSip: true,
             register: false
         };
 
+        //Obiekt z wiązaniami do elementów dom
         var elements = {
             endButton: document.getElementById('end-btn'),
             uaVideo: document.getElementById('videoChkBox'),
@@ -30,18 +41,10 @@ class DashboardController {
             sessionTemplate: document.getElementById('session-template')
         };
 
-        var sessionUIs = {};
 
-
-
-
-
-
+        //Zmienne do wykresu
         var dps = []; // dataPoints
         var chart = new CanvasJS.Chart("chartContainer", {
-            // title :{
-            //     text: "Przepustowość połączenia"
-            // },
             axisY: {
                 includeZero: false
             },      
@@ -50,10 +53,12 @@ class DashboardController {
                 dataPoints: dps
             }]
         });
-        
         var xVal = 0;
         var yVal = 100; 
-        
+
+
+
+        //Rysowanie wykresu przepustowości
         this.updateChart = function (count, data) {
             
             count = count || 1;
@@ -73,14 +78,7 @@ class DashboardController {
         
             chart.render();
         };
-        
         _this.updateChart(10, 0);
-
-
-
-
-
-
 
 
         //Pobranie danych użytkownika i utworzenie agenta sip dla telefonu
@@ -110,11 +108,12 @@ class DashboardController {
                 });
 
                 ua.on('invite', function (session) {
-                    _this.info.status = 'Coś przychodzi';
+                    console.log('Zaproszenie');
                     createNewSessionUI(session.remoteIdentity.uri, session);
                 });
 
                 ua.on('message', function (message) {
+                    console.log('Wiadomość przyszła');
                     if (!sessionUIs[message.remoteIdentity.uri]) {
                         createNewSessionUI(message.remoteIdentity.uri, null, message);
                     }
@@ -125,7 +124,7 @@ class DashboardController {
         let Friends = this.API.all('contacts');
         Friends.getList()
             .then((response) => {
-                _this.dataSet = response.plain()
+                _this.friends = response.plain()
             });
 
 
@@ -147,7 +146,6 @@ class DashboardController {
 
         //Wysyłanie zaproszenia
         this.inviteBtnClick = function () {
-            console.log('Wysyłanie zaproszenia');
 
             var uri = elements.uaURI.value;
 
@@ -317,14 +315,7 @@ class DashboardController {
                 } else if (session.accept && !session.startTime) { // Incoming, not connected
                     session.accept(options);
 
-                    console.log(session, 'SESJA');
-
-                    setInterval(function () {
-
-                        console.log(session, 'SESJA po 333333333333333333333');
-
-
-                    }, 5000);
+                    console.log(session, 'SESJA po zakończeniu');
                 }
             }, false);
 
@@ -400,6 +391,7 @@ class DashboardController {
                     sessionUI.green.innerHTML = '...';
                     sessionUI.red.innerHTML = 'Koniec';
                     sessionUI.dtmfInput.disabled = false;
+                    sessionUI.video.className = 'on';
                     elements.endButton.style.display = "inline-block";
 
                     session.mediaHandler.render(sessionUI.renderHint);
@@ -422,7 +414,7 @@ class DashboardController {
                 });
 
                 session.on('bye', function () {
-                    getStats.nomore();
+                    window.getStats.nomore();
 
                     sessionUI.green.disabled = false;
                     sessionUI.red.disabled = true;
@@ -430,18 +422,19 @@ class DashboardController {
                     sessionUI.green.innerHTML = 'Zadzwoń';
                     sessionUI.red.innerHTML = '...';
                     elements.endButton.classList.add('hide');
-                    sessionUI.video.classList.add('hide');
+                    sessionUI.video.className = '';
                     delete sessionUI.session;
                 });
 
                 session.on('failed', function () {
-                    getStats.nomore();
+                    window.getStats.nomore();
 
                     sessionUI.green.disabled = false;
                     sessionUI.red.disabled = true;
                     sessionUI.dtmfInput.disable = true;
                     sessionUI.green.innerHTML = 'Zadzwoń';
                     sessionUI.red.innerHTML = '...';
+                    sessionUI.video.className = '';
                     elements.endButton.classList.add('hide');
                     sessionUI.video.classList.add('hide');
                     delete sessionUI.session;

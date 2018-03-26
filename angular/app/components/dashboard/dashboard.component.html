@@ -71,7 +71,7 @@
                 </div>
                 <div class="box-body no-padding">
                     <ul class="users-list clearfix">
-                        <li ng-repeat="contact in vm.dataSet">
+                        <li ng-repeat="contact in vm.friends">
                             <a href="#" ng-click="vm.clickContact(contact.sip_address)">
                                 <img src="/img/avatar04.png" alt="Zdjęcie znajomego">
                             </a>
@@ -106,7 +106,7 @@
                                         <h3 class="box-title display-name"></h3>
                                         <span class="uri"></span>
                                         <div class="box-tools pull-right">
-                                            <span data-toggle="tooltip" title="3 New Messages" class="badge bg-yellow">3</span>
+                                            <span data-toggle="tooltip" class="badge bg-yellow">1</span>
                                             <button type="green" class="btn btn-box-tool">
                                                 <span class="glyphicon glyphicon-earphone"></span>
                                             </button>
@@ -120,20 +120,26 @@
                                     </div>
 
                                     <div class="box-body">
-                                        <button class="green">Green</button>
-                                        <button class="red">Red</button>
+           
+                                        <div class="btn-group">
+
+                                            <button class="btn btn-flat green btn-success"></button>
+                                            <button class="btn btn-flat red btn-danger"></button>
+                                            <span>&nbsp;</span>
+                                        </div>
+                                        <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
                                         <form class="dtmf" action="">
-                                            <label>DTMF
-                                                <input type="text" maxlength="1" />
-                                            </label>
-                                            <input type="submit" value="Wyślij" />
+                                                <input type="text" maxlength="1" disabled="">
+                                                <input type="submit" class="btn-primary" value="Wyślij DTFM">
                                         </form>
 
+                                  
                                         <video autoplay>Wyłączone lub niedostępne</video>
                                         <div class="direct-chat-messages messages">
 
                                         </div>
                                     </div>
+
                                 </div>
 
                                 <div class="box-footer card-action">
@@ -254,6 +260,5 @@
                 </div>
             </div>
         </div>
-</div>
+    </div>
 </section>
-
