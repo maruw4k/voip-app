@@ -28,14 +28,14 @@ class DashboardController {
 
         let sipConfig = {
             traceSip: true,
-            register: false,
-        stunServers: [
-            "stun.l.google.com:19302",
-            "stun.stunprotocol.org:3478",
-            "stun.voiparound.com",
-            "stun.voipbuster.com",
-            "stun.turnservers.com:3478"
-        ],
+            register: true,
+            stunServers: [
+                "stun.l.google.com:19302",
+                "stun.stunprotocol.org:3478",
+                "stun.voiparound.com",
+                "stun.voipbuster.com",
+                "stun.turnservers.com:3478"
+            ],
         };
 
         //Obiekt z wiązaniami do elementów dom
@@ -158,6 +158,7 @@ class DashboardController {
                 subscription[j] = ua.subscribe(friends[j].sip_address, 'presence');
                 subscription[j].on('notify', function (notification) {
                     document.getElementById(id).style.backgroundColor = "green";
+                    console.log('POWIADOMIENIE dla ', friends[j].name) ;
                 });
             }
         }
