@@ -52,13 +52,13 @@
             <ul id="templates">
                 <li id="session-template" class="template session">
 
-                    <div class="box box-warning direct-chat direct-chat-warning card horizontal">
+                    <div class="box box-warning direct-chat direct-chat-primary card horizontal">
                         <div class="card-stacked">
                             <div class="box-header with-border">
                                 <h3 class="box-title display-name"></h3>
                                 <span class="uri"></span>
                                 <div class="box-tools pull-right">
-                                    <span data-toggle="tooltip" class="badge bg-yellow">1</span>
+                                    <span data-toggle="tooltip" class="badge bg-light-blue">1</span>
                                     <button type="green" class="btn btn-box-tool">
                                         <span class="glyphicon glyphicon-earphone"></span>
                                     </button>
@@ -99,7 +99,7 @@
                                 <div class="input-group">
                                     <input type="text" name="message" placeholder="Wprowadź wiadomość ..." class="form-control">
                                     <span class="input-group-btn">
-                                        <button type="submit" class="btn btn-warning btn-flat">Wyślij</button>
+                                        <button type="submit" class="btn btn-primary btn-flat">Wyślij</button>
                                     </span>
                                 </div>
                             </form>
@@ -143,7 +143,7 @@
                                 {{contact.name}} &nbsp;
                                 <span id="dot-{{contact.id}}" class="avaliable-dot"></span>
                             </a>
-                            <span class="users-list-date">{{contact.sip_address}}</span>
+                            <span class="users-list-date address-sip">{{contact.sip_address}}</span>
                         </li>
                     </ul>
                 </div>

@@ -98,3 +98,12 @@ input[type=checkbox] {
     border-radius: 50%;
     display: inline-block;
 }
+
+
+.address-sip {
+    display: block;
+    width: 118px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
