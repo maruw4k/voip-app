@@ -2,7 +2,6 @@ class DashboardController {
     constructor($scope, $timeout, API) {
         'ngInject'
 
-        //Pomocnicze
         this.API = API;
         var _this = this;
         //Do łatwiejszego debugowania
@@ -29,7 +28,14 @@ class DashboardController {
 
         let sipConfig = {
             traceSip: true,
-            register: false
+            register: false,
+        stunServers: [
+            "stun.l.google.com:19302",
+            "stun.stunprotocol.org:3478",
+            "stun.voiparound.com",
+            "stun.voipbuster.com",
+            "stun.turnservers.com:3478"
+        ],
         };
 
         //Obiekt z wiązaniami do elementów dom
@@ -251,10 +257,10 @@ class DashboardController {
                 var now = result.results[i];
 
                 if (now.type == 'ssrc') {
-                    console.log('now.ssrc', now.googRtt);
+                    // console.log('now.ssrc', now.googRtt);
                     rttMeasures.push(now.googRtt);
                     var avgRtt = _this.calculateAverage(rttMeasures);
-                    console.log('avgrtt', avgRtt);
+                    // console.log('avgrtt', avgRtt);
 
                     _this.calculateMos(avgRtt);
                     document.getElementById('mos').innerHTML = _this.calculateMos(avgRtt).toString();
@@ -422,19 +428,7 @@ class DashboardController {
                 });
 
                 session.on('bye', function () {
-                    getStats.nomore();
-
-                    sessionWindow.green.disabled = false;
-                    sessionWindow.red.disabled = true;
-                    sessionWindow.dtmfInput.disable = true;
-                    sessionWindow.green.innerHTML = 'Zadzwoń';
-                    sessionWindow.red.innerHTML = '...';
-                    sessionWindow.video.className.remove = 'on';
-                    delete sessionWindow.session;
-                });
-
-                session.on('failed', function () {
-                    window.getStats.nomore();
+                    // getStats.nomore();
 
                     sessionWindow.green.disabled = false;
                     sessionWindow.red.disabled = true;
@@ -442,7 +436,18 @@ class DashboardController {
                     sessionWindow.green.innerHTML = 'Zadzwoń';
                     sessionWindow.red.innerHTML = '...';
                     sessionWindow.video.className = '';
-                    sessionWindow.video.className.remove = 'on';
+                    delete sessionWindow.session;
+                });
+
+                session.on('failed', function () {
+                    // window.getStats.nomore();
+
+                    sessionWindow.green.disabled = false;
+                    sessionWindow.red.disabled = true;
+                    sessionWindow.dtmfInput.disable = true;
+                    sessionWindow.green.innerHTML = 'Zadzwoń';
+                    sessionWindow.red.innerHTML = '...';
+                    sessionWindow.video.className = '';
                     delete sessionWindow.session;
                 });
 
@@ -479,10 +484,10 @@ class DashboardController {
                 //Zależnie od kogo jest wiadomość, to inny widok tekstu z wiadomością
                 if (sender === 'friend') {
                     messageNode.className = 'direct-chat-msg right';
-                    messageNode.innerHTML = '<div class="direct-chat-info clearfix"><span class="direct-chat-name pull-right display-name"></span><span class="direct-chat-timestamp pull-left uri"> ' + n + ' </span> </div><img class="direct-chat-img" src="/img/user3-128x128.jpg" alt="message user image"> <div class="direct-chat-text"> ' + body + '</div>';
+                    messageNode.innerHTML = '<div class="direct-chat-info clearfix"><span class="direct-chat-name pull-right display-name"></span><span class="direct-chat-timestamp pull-left uri"> ' + n + ' </span> </div><img class="direct-chat-img" src="/img/avatar.png" alt="message user image"> <div class="direct-chat-text"> ' + body + '</div>';
                 } else {
                     messageNode.className = 'direct-chat-msg';
-                    messageNode.innerHTML = '  <div class="direct-chat-info clearfix"> <span class="direct-chat-name pull-left display-name">Ja</span> <span class="direct-chat-timestamp pull-right"> ' + n + ' </span></div><img class="direct-chat-img" src="/img/user1-128x128.jpg" alt="message user image"><div class="direct-chat-text">' + body + ' </div>';
+                    messageNode.innerHTML = '  <div class="direct-chat-info clearfix"> <span class="direct-chat-name pull-left display-name">Ja</span> <span class="direct-chat-timestamp pull-right"> ' + n + ' </span></div><img class="direct-chat-img" src="/img/avatar.png" alt="message user image"><div class="direct-chat-text">' + body + ' </div>';
                 }
                 sessionWindow.messages.appendChild(messageNode);
                 sessionWindow.messages.scrollTop = sessionWindow.messages.scrollHeight;
