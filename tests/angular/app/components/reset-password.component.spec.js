@@ -1,5 +1,5 @@
 ngDescribe({
-  name: 'Test reset-password component',
+  name: 'Test dla komponentu reset-password',
   modules: 'app',
   inject: '$http',
   element: '<reset-password></reset-password>',
@@ -16,7 +16,7 @@ ngDescribe({
     }
   },
   tests: function (deps) {
-    it('Should have password and password confirmation', () => {
+    it('Powinien zawierać inputy: password and password confirmation', () => {
       var inputs = deps.element.find('input')
       expect(inputs.length).toBe(2)
 
@@ -27,7 +27,7 @@ ngDescribe({
       expect(password_confirmation.attributes['type'].value).toBe('password')
     })
 
-    it('should submit password reset successfully', () => {
+    it('Powinien poprawnie wysłać', () => {
       var component = deps.element.isolateScope().vm
 
       component.submit()

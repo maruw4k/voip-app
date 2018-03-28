@@ -1,5 +1,5 @@
 ngDescribe({
-  name: 'Test routes configuration',
+  name: 'Test konfiguracji routingu',
   inject: ['$location', '$state'],
   modules: 'app',
   tests: function (deps) {
@@ -9,15 +9,15 @@ ngDescribe({
     }
     describe('path', function () {
 
-      describe('when /login', function () {
-        it('should go to the login state', function () {
+      describe('kiedy /login', function () {
+        it('Powinien być stan logowania', function () {
           goTo('/login')
           expect(deps.$state.$current.name).toEqual('login')
         })
       })
 
-      describe('when /register', function () {
-        it('should go to the register state', function () {
+      describe('kiedy /register', function () {
+        it('Powinien być stan rejestracji', function () {
           goTo('/register')
           expect(deps.$state.$current.name).toEqual('register')
         })

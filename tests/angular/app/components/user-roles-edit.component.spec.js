@@ -1,5 +1,5 @@
 ngDescribe({
-  name: 'Test user-roles-edit component',
+  name: 'Test dla komponentu user-roles-edit',
   modules: 'app',
   element: '<user-roles-edit></user-roles-edit>',
   http: {

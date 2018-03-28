@@ -1,5 +1,5 @@
 ngDescribe({
-  name: 'Test user-edit component',
+  name: 'Test dla komponentu user-edit',
   modules: 'app',
   element: '<user-edit></user-edit>',
   http: {
@@ -13,7 +13,7 @@ ngDescribe({
     }
   },
   tests: function (deps) {
-    it('Should have name, email', () => {
+    it('Powinien zawierać inputy: name, email', () => {
       var inputs = deps.element.find('input')
       expect(inputs.length).toBe(2)
 

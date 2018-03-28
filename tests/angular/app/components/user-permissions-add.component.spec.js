@@ -1,9 +1,9 @@
 ngDescribe({
-  name: 'Test user-permissions-add component',
+  name: 'Test dla komponentu user-permissions-add',
   modules: 'app',
   element: '<user-permissions-add></user-permissions-add>',
   tests: function (deps) {
-    it('Should have name, slug and description', () => {
+    it('Powinien zawierać inputy: name, slug and description', () => {
       var inputs = deps.element.find('input')
       expect(inputs.length).toBe(2)
 

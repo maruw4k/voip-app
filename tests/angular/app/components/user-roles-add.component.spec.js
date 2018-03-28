@@ -1,5 +1,5 @@
 ngDescribe({
-  name: 'Test user-roles-add component',
+  name: 'Test dla komponentu user-roles-add',
   modules: 'app',
   element: '<user-roles-add></user-roles-add>',
   tests: function (deps) {

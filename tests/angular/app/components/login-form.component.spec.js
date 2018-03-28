@@ -1,9 +1,9 @@
 ngDescribe({
-  name: 'Test login-form component',
+  name: 'Test dla komponentu login-form',
   modules: 'app',
   element: '<login-form></login-form>',
   tests: function (deps) {
-    it('Should have email and password inputs', () => {
+    it('Powinien zawierać inputy: email and password', () => {
       var inputs = deps.element.find('input')
       expect(inputs.length).toBe(2)
       var email = deps.element.find('input')[0]

@@ -1,5 +1,5 @@
 ngDescribe({
-  name: 'Test forgot-password component',
+  name: 'Test dla komponentu forgot-password',
   modules: 'app',
   inject: '$http',
   element: '<forgot-password></forgot-password>',
@@ -11,7 +11,7 @@ ngDescribe({
     }
   },
   tests: function (deps) {
-    it('Should have email', () => {
+    it('Powinien zawierać: email', () => {
       var inputs = deps.element.find('input')
       expect(inputs.length).toBe(1)
 
@@ -19,7 +19,7 @@ ngDescribe({
       expect(email.attributes['type'].value).toBe('email')
     })
 
-    it('should request email verification successfully', () => {
+    it('Powinien popranie wysłać e-maila', () => {
       var component = deps.element.isolateScope().vm
 
       component.email = 'email@localhost.com'

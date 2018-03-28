@@ -1,5 +1,5 @@
 ngDescribe({
-  name: 'Test user-lists component',
+  name: 'Test dla komponentu user-lists',
   modules: 'app',
   element: '<user-lists></user-lists>',
   http: {
@@ -10,7 +10,7 @@ ngDescribe({
     }
   },
   tests: function (deps) {
-    it('delete is a function', () => {
+    it('delete jest funkcją', () => {
       var component = deps.element.isolateScope().vm
       la(typeof component.delete === 'function')
     })
