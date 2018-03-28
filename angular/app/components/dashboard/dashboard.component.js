@@ -348,8 +348,8 @@ class DashboardController {
             sessionWindow.node = node;
             sessionWindow.displayName = node.querySelector('.display-name');
             sessionWindow.uri = node.querySelector('.uri');
-            sessionWindow.green = node.querySelector('.green');
-            sessionWindow.red = node.querySelector('.red');
+            sessionWindow.accept = node.querySelector('.accept');
+            sessionWindow.reject = node.querySelector('.reject');
             sessionWindow.dtmf = node.querySelector('.dtmf');
             sessionWindow.dtmfInput = node.querySelector('.dtmf input[type="text"]');
             sessionWindow.video = node.querySelector('video');
@@ -368,7 +368,7 @@ class DashboardController {
             sessionWindow.uri.textContent = '(' + uri + ')';
 
             // Ustawienie listenerów na przyciski w oknie rozmowy
-            sessionWindow.green.addEventListener('click', function () {
+            sessionWindow.accept.addEventListener('click', function () {
                 var video = elements.uaVideo.checked;
                 var options = {
                     media: {
@@ -390,7 +390,7 @@ class DashboardController {
                 }
             }, false);
 
-            sessionWindow.red.addEventListener('click', function () {
+            sessionWindow.reject.addEventListener('click', function () {
                 var session = sessionWindow.session;
                 if (!session) {
                     return;
@@ -418,36 +418,36 @@ class DashboardController {
 
             // Ustawienie przycisków
             if (session && !session.accept) {
-                sessionWindow.green.disabled = true;
-                sessionWindow.green.innerHTML = '...';
-                sessionWindow.red.innerHTML = 'Anuluj';
+                sessionWindow.accept.disabled = true;
+                sessionWindow.accept.innerHTML = '...';
+                sessionWindow.reject.innerHTML = 'Anuluj';
             } else if (!session) {
-                sessionWindow.red.disabled = true;
-                sessionWindow.green.innerHTML = 'Zadzwoń';
-                sessionWindow.red.innerHTML = '...';
+                sessionWindow.reject.disabled = true;
+                sessionWindow.accept.innerHTML = 'Zadzwoń';
+                sessionWindow.reject.innerHTML = '...';
             } else {
-                sessionWindow.green.innerHTML = 'Odbierz';
-                sessionWindow.red.innerHTML = 'Odrzuć';
+                sessionWindow.accept.innerHTML = 'Odbierz';
+                sessionWindow.reject.innerHTML = 'Odrzuć';
             }
             sessionWindow.dtmfInput.disabled = true;
 
 
             function setUpListeners(session) {
-                sessionWindow.red.disabled = false;
+                sessionWindow.reject.disabled = false;
 
                 if (session.accept) {
-                    sessionWindow.green.disabled = false;
-                    sessionWindow.green.innerHTML = 'Odbierz';
-                    sessionWindow.red.innerHTML = 'Odrzuć';
+                    sessionWindow.accept.disabled = false;
+                    sessionWindow.accept.innerHTML = 'Odbierz';
+                    sessionWindow.reject.innerHTML = 'Odrzuć';
                 } else {
-                    sessionWindow.green.innerHMTL = '...';
-                    sessionWindow.red.innerHTML = 'Anuluj';
+                    sessionWindow.accept.innerHMTL = '...';
+                    sessionWindow.reject.innerHTML = 'Anuluj';
                 }
 
                 session.on('accepted', function () {
-                    sessionWindow.green.disabled = true;
-                    sessionWindow.green.innerHTML = '...';
-                    sessionWindow.red.innerHTML = 'Koniec';
+                    sessionWindow.accept.disabled = true;
+                    sessionWindow.accept.innerHTML = '...';
+                    sessionWindow.reject.innerHTML = 'Koniec';
                     sessionWindow.dtmfInput.disabled = false;
                     sessionWindow.video.className = 'on';
 
@@ -473,11 +473,11 @@ class DashboardController {
                 session.on('bye', function () {
                     // getStats.nomore();
 
-                    sessionWindow.green.disabled = false;
-                    sessionWindow.red.disabled = true;
+                    sessionWindow.accept.disabled = false;
+                    sessionWindow.reject.disabled = true;
                     sessionWindow.dtmfInput.disable = true;
-                    sessionWindow.green.innerHTML = 'Zadzwoń';
-                    sessionWindow.red.innerHTML = '...';
+                    sessionWindow.accept.innerHTML = 'Zadzwoń';
+                    sessionWindow.reject.innerHTML = '...';
                     sessionWindow.video.className = '';
                     delete sessionWindow.session;
                 });
@@ -485,11 +485,11 @@ class DashboardController {
                 session.on('failed', function () {
                     // window.getStats.nomore();
 
-                    sessionWindow.green.disabled = false;
-                    sessionWindow.red.disabled = true;
+                    sessionWindow.accept.disabled = false;
+                    sessionWindow.reject.disabled = true;
                     sessionWindow.dtmfInput.disable = true;
-                    sessionWindow.green.innerHTML = 'Zadzwoń';
-                    sessionWindow.red.innerHTML = '...';
+                    sessionWindow.accept.innerHTML = 'Zadzwoń';
+                    sessionWindow.reject.innerHTML = '...';
                     sessionWindow.video.className = '';
                     delete sessionWindow.session;
                 });
