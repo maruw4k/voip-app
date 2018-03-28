@@ -348,7 +348,7 @@ class DashboardController {
             sessionWindow.node = node;
             sessionWindow.displayName = node.querySelector('.display-name');
             sessionWindow.uri = node.querySelector('.uri');
-            sessionWindow.accept = node.querySelector('.accept');
+            sessionWindow.call = node.querySelector('.accept');
             sessionWindow.reject = node.querySelector('.reject');
             sessionWindow.dtmf = node.querySelector('.dtmf');
             sessionWindow.dtmfInput = node.querySelector('.dtmf input[type="text"]');
@@ -367,9 +367,11 @@ class DashboardController {
             sessionWindow.displayName.textContent = displayName || uri.user;
             sessionWindow.uri.textContent = '(' + uri + ')';
 
-            // Ustawienie listenerów na przyciski w oknie rozmowy
-            sessionWindow.accept.addEventListener('click', function () {
+            // Akcja na naciśnięcie przysisku rozmowy
+            sessionWindow.call.addEventListener('click', function () {
+                //Pobranie wartości true/false określającej czy rozmowa będzie wideo lub audio 
                 var video = elements.uaVideo.checked;
+                //Obiekt konfiguracyjny przyszłego połączenia
                 var options = {
                     media: {
                         constraints: {
@@ -379,17 +381,22 @@ class DashboardController {
                     }
                 };
 
+                //Przypisanie zmiennej session do sesji bieżącego okna
                 var session = sessionWindow.session;
+                //Jeśli sesja jeszcze nie istnieje, to zaproś do rozmowy
                 if (!session) {
+                    //Poprzez User Agenta zaproś do rozmowy
+                    //ua.invite(adres_odbiorcy, parametry_połączenia);
                     session = sessionWindow.session = ua.invite(uri, options);
 
+                    //Odpalenie funkcji, która zawiera odpowiednie akcji na rozmowę
                     setUpListeners(session);
-                } else if (session.accept && !session.startTime) { // W przypadku gdy połączenie nadchodzi ale nie zaczęło się sesji
-                    session.accept(options);
-
+                } else if (session.accept && !session.startTime) { // W przypadku gdy połączenie nadchodzi ale nie zaczęło się rozmowy, to odbierz
+                    session.accept(options); 
                 }
             }, false);
 
+            //Przypisanie akcji do przycisku odrzucania wiadomości
             sessionWindow.reject.addEventListener('click', function () {
                 var session = sessionWindow.session;
                 if (!session) {
@@ -403,6 +410,7 @@ class DashboardController {
                 }
             }, false);
 
+            //Przypisanie akcji do formularza wysyłania dtfm
             sessionWindow.dtmf.addEventListener('submit', function (e) {
                 e.preventDefault();
 
@@ -418,15 +426,15 @@ class DashboardController {
 
             // Ustawienie przycisków
             if (session && !session.accept) {
-                sessionWindow.accept.disabled = true;
-                sessionWindow.accept.innerHTML = '...';
+                sessionWindow.call.disabled = true;
+                sessionWindow.call.innerHTML = '...';
                 sessionWindow.reject.innerHTML = 'Anuluj';
             } else if (!session) {
                 sessionWindow.reject.disabled = true;
-                sessionWindow.accept.innerHTML = 'Zadzwoń';
+                sessionWindow.call.innerHTML = 'Zadzwoń';
                 sessionWindow.reject.innerHTML = '...';
             } else {
-                sessionWindow.accept.innerHTML = 'Odbierz';
+                sessionWindow.call.innerHTML = 'Odbierz';
                 sessionWindow.reject.innerHTML = 'Odrzuć';
             }
             sessionWindow.dtmfInput.disabled = true;
@@ -436,17 +444,17 @@ class DashboardController {
                 sessionWindow.reject.disabled = false;
 
                 if (session.accept) {
-                    sessionWindow.accept.disabled = false;
-                    sessionWindow.accept.innerHTML = 'Odbierz';
+                    sessionWindow.call.disabled = false;
+                    sessionWindow.call.innerHTML = 'Odbierz';
                     sessionWindow.reject.innerHTML = 'Odrzuć';
                 } else {
-                    sessionWindow.accept.innerHMTL = '...';
+                    sessionWindow.call.innerHMTL = '...';
                     sessionWindow.reject.innerHTML = 'Anuluj';
                 }
 
                 session.on('accepted', function () {
-                    sessionWindow.accept.disabled = true;
-                    sessionWindow.accept.innerHTML = '...';
+                    sessionWindow.call.disabled = true;
+                    sessionWindow.call.innerHTML = '...';
                     sessionWindow.reject.innerHTML = 'Koniec';
                     sessionWindow.dtmfInput.disabled = false;
                     sessionWindow.video.className = 'on';
@@ -473,10 +481,10 @@ class DashboardController {
                 session.on('bye', function () {
                     // getStats.nomore();
 
-                    sessionWindow.accept.disabled = false;
+                    sessionWindow.call.disabled = false;
                     sessionWindow.reject.disabled = true;
                     sessionWindow.dtmfInput.disable = true;
-                    sessionWindow.accept.innerHTML = 'Zadzwoń';
+                    sessionWindow.call.innerHTML = 'Zadzwoń';
                     sessionWindow.reject.innerHTML = '...';
                     sessionWindow.video.className = '';
                     delete sessionWindow.session;
@@ -485,10 +493,10 @@ class DashboardController {
                 session.on('failed', function () {
                     // window.getStats.nomore();
 
-                    sessionWindow.accept.disabled = false;
+                    sessionWindow.call.disabled = false;
                     sessionWindow.reject.disabled = true;
                     sessionWindow.dtmfInput.disable = true;
-                    sessionWindow.accept.innerHTML = 'Zadzwoń';
+                    sessionWindow.call.innerHTML = 'Zadzwoń';
                     sessionWindow.reject.innerHTML = '...';
                     sessionWindow.video.className = '';
                     delete sessionWindow.session;
