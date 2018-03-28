@@ -23,11 +23,11 @@ ngDescribe({
       var passsword = deps.element.find('input')[2]
       expect(passsword.attributes['type'].value).toBe('password')
 
-      var passsword = deps.element.find('input')[3]
-      expect(passsword.attributes['type'].value).toBe('password')
+      var passsword_confirmation = deps.element.find('input')[3]
+      expect(passsword_confirmation.attributes['type'].value).toBe('password')
 
-      var passsword = deps.element.find('input')[4]
-      expect(passsword.attributes['type'].value).toBe('password')
+      var new_passsword = deps.element.find('input')[4]
+      expect(new_passsword.attributes['type'].value).toBe('password')
 
       var sip_uri = deps.element.find('input')[5]
       expect(sip_uri.attributes['type'].value).toBe('text')

@@ -1,10 +1,10 @@
 ngDescribe({
-  name: 'Test dla komponentu user-lists',
+  name: 'Test dla komponentu friend-lists',
   modules: 'app',
-  element: '<user-lists></user-lists>',
+  element: '<friend-lists></friend-lists>',
   http: {
     get: {
-      '/api/users': {
+      '/api/contacts': {
         data: true
       }
     }
