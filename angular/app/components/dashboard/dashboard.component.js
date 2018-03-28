@@ -26,9 +26,20 @@ class DashboardController {
         //Obiekt trzymający sesje
         var sessionWindows = {};
 
+        //Obiekt konfiguracyjny
         let sipConfig = {
-            traceSip: true,
+            // uri konta sip, (puste, bo później uzupełni się wartością pobraną z bazy danych
+            uri: '',
+            //login konta sip, (puste, bo później uzupełni się wartością pobraną z bazy danyc
+            authorizationUser: '',
+            //hasło konta sip, (puste, bo później uzupełni się wartością pobraną z bazy danych
+            password: '',
+            //serwer websocketowy do połączenia, (puste, bo później uzupełni się wartością pobraną z bazy danyc
+            wsServers: [''],
+            //czy na starcie ma od razu zarejestrować
             register: true,
+            //czy przychodzące i wychodzące połączenia mają być wyświetlane w konsoli
+            traceSip: true,
             stunServers: [
                 "stun.l.google.com:19302",
                 "stun.stunprotocol.org:3478",
@@ -84,46 +95,63 @@ class DashboardController {
         _this.updateChart(10, 0);
 
 
-        // let Friends = this.API.all('contacts')
-        //Pobranie danych użytkownika i utworzenie agenta sip dla telefonu
+        this.setGuiFriendStatus = function (friend, status) {
+            if (status == 'active') {
+                document.getElementById(friend).style.backgroundColor = "green";
+            } else return;
+        }
+
+
+
+        //Pobranie danych użytkownika z bazy danych z pomocą 
         let UserData = API.service('me', API.all('users'))
         UserData.one().get()
             .then((response) => {
+                //Przypisanie pobranych wartości z bazy danych do wartości odpowiadających w pliku konfiguracyjnym 
                 sipConfig.uri = response.data.sip_uri;
                 sipConfig.wsServers = response.data.sip_ws;
                 sipConfig.authorizationUser = response.data.sip_login;
                 sipConfig.password = response.data.sip_password;
             }).then(() => {
+                //Utworzenie User agenta
                 ua = new SIP.UA(sipConfig);
 
-                //Ustawienie listenerów do nasłuchiwania sygnałów
+                //Ustawienie listenera, który wykona się po połączeniu
                 ua.on('connected', function () {
                     console.log('Connected');
                     _this.info.status = 'Połączony';
                     _this.info.textBtn = 'Zarejestruj';
+                    //aktualizuhe wartości $scope, potrzebne do wyświetlenia w widoku
+                    $scope.$apply();
                 });
 
+                //Ustawienie listenera, który wykona się po zarejestrowaniu
                 ua.on('registered', function () {
                     console.log('Registered');
                     _this.info.textBtn = 'Wyloguj';
                     _this.info.status = 'Zarejestrowano';
+                    //aktualizuhe wartości $scope, potrzebne do wyświetlenia w widoku
                     $scope.$apply();
                 });
-
+                //Ustawienie listenera, który wykona się po wyrejestrowaniu
                 ua.on('unregistered', function () {
                     console.log('Niezarejestrowano');
                     _this.info.textBtn = 'Zarejestruj';
                     _this.info.status = 'Niezarejestrowano';
+                    //aktualizuhe wartości $scope, potrzebne do wyświetlenia w widoku
                     $scope.$apply();
                 });
 
+                //Ustawienie listenera, który wykona się po nadjeściu połączenia od innego użytkownika
                 ua.on('invite', function (session) {
                     console.log('Zaproszenie');
+                    //Funkcja otwierająca nowe okno rozmowy
                     createNewsessionWindow(session.remoteIdentity.uri, session);
                 });
-
+                //Ustawienie listenera, który wykona się po otrzymaniu wiadomości
                 ua.on('message', function (message) {
                     console.log('Wiadomość przyszła');
+                    //Funkcja otwierająca nowe okno rozmowy jeśli takie jeszze nie istnieje
                     if (!sessionWindows[message.remoteIdentity.uri]) {
                         createNewsessionWindow(message.remoteIdentity.uri, null, message);
                     }
@@ -144,21 +172,29 @@ class DashboardController {
             });
 
 
-        //Ustawienie subskrypcji na użytkownikach i reakcje na powiadomienia
+        //Ustawienie subskrypcji na użytkownikach i reakcje na powiadomienia, parametr friends - lista znajomych  
         this.setSubscription = function (friends) {
+            //Jeśli User Agent jest niezdefiniowany, to zakończ funkcję
             if (!ua) return;
             console.log(friends, 'Znajomi');
 
+            //Zmienna do trzymania subskrypcji
             var subscription = [];
+            //Iteracja po każdym ze znajomych
             for (var j = 0; j < friends.length; j++) {
                 console.log('Subskrypcja: ', friends[j].sip_address);
-                var id = 'dot-' + friends[j].id;
-                document.getElementById(id).style.backgroundColor = "gray";
+                var idDot = 'dot-' + friends[j].id;
 
+
+                //Ustawienie subskrypcji na adres znajomego
                 subscription[j] = ua.subscribe(friends[j].sip_address, 'presence');
+                //Zmienia kolor kropki przy użytkowniku jeśli subskrypcja została na nim ustawiona
+                document.getElementById(idDot).style.backgroundColor = "gray";
+
+                //Nasłuchuje status użytkownika
                 subscription[j].on('notify', function (notification) {
-                    document.getElementById(id).style.backgroundColor = "green";
-                    console.log('POWIADOMIENIE dla ', friends[j].name) ;
+                    _this.setGuiFriendStatus(idDot, notification.request.body)
+                    console.log('POWIADOMIENIE dla ', friends[j].name);
                 });
             }
         }
@@ -223,8 +259,9 @@ class DashboardController {
         }
 
 
-        //Liczenie poziomu jakości
-        this.calculateMos = function (avgRtt) {
+        //Liczenie poziomu jakości według skali e-model, 
+        //za parametr przyjmuje średni czas rtt, czyli minimalny czas wymagany do przesłania sygnału w obu kierunkach
+        this.calculateEmodel = function (avgRtt) {
             var emodel = 0;
             if (avgRtt === null || avgRtt) {
                 avgRtt = 0;
@@ -245,45 +282,48 @@ class DashboardController {
 
         //Pokazywanie statystyk
         this.showStatistic = function (result) {
-            document.getElementById('bandwith').innerHTML = _this.bytesToSize(result.bandwidth.speed);
+            //Aktualizuje GUI odpowiednimi wartościami
+            document.getElementById('bandwith').innerHTML = _this.convertBytesToUnit(result.bandwidth.speed);
             document.getElementById('codecsSend').innerHTML = result.audio.send.codecs.concat(result.video.send.codecs).join(', ');
             document.getElementById('codecsRecv').innerHTML = result.audio.recv.codecs.concat(result.video.recv.codecs).join(', ');
             document.getElementById('encryption').innerHTML = result.encryption;
             document.getElementById('resolutionSend').innerHTML = result.resolutions.send.width + 'x' + result.resolutions.send.height;
             document.getElementById('resolutionRecv').innerHTML = result.resolutions.recv.width + 'x' + result.resolutions.recv.height;
-            document.getElementById('sendDate').innerHTML = _this.bytesToSize(result.audio.bytesSent + result.video.bytesSent);
-            document.getElementById('recDate').innerHTML = _this.bytesToSize(result.audio.bytesReceived + result.video.bytesReceived);
+            document.getElementById('sendDate').innerHTML = _this.convertBytesToUnit(result.audio.bytesSent + result.video.bytesSent);
+            document.getElementById('recDate').innerHTML = _this.convertBytesToUnit(result.audio.bytesReceived + result.video.bytesReceived);
 
+            //Pętla pobierająca wartośći RTT i na podstawie tego liczenie wartości e-model
             for (var i in result.results) {
                 var now = result.results[i];
 
                 if (now.type == 'ssrc') {
-                    // console.log('now.ssrc', now.googRtt);
+                    //wrzuca do tablicy wartości rtt
                     rttMeasures.push(now.googRtt);
+                    // liczy średną rtt
                     var avgRtt = _this.calculateAverage(rttMeasures);
                     // console.log('avgrtt', avgRtt);
-
-                    _this.calculateMos(avgRtt);
-                    document.getElementById('mos').innerHTML = _this.calculateMos(avgRtt).toString();
-                    document.getElementById('mos-progress').style.width = _this.calculateMos(avgRtt).toString + '0%';
+                    //funkcja liczy wartość e-model
+                    _this.calculateEmodel(avgRtt);
+                    //wyświetlenie wartości emodel w GUI
+                    document.getElementById('emodel').innerHTML = _this.calculateEmodel(avgRtt).toString();
                 }
             }
         }
 
-        //Zamiena bajty na łatwe do odczytania wartości
-        this.bytesToSize = function (bytes) {
+        //Zamiena bajty na jednostki z przedrostkami
+        this.convertBytesToUnit = function (bytes) {
             var k = 1000;
-            var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+            var unit = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
             if (bytes <= 0) {
                 return '0 Bytes';
             }
             var i = parseInt(Math.floor(Math.log(bytes) / Math.log(k)), 10);
 
-            if (!sizes[i]) {
+            if (!unit[i]) {
                 return '0 Bytes';
             }
 
-            return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + sizes[i];
+            return (bytes / Math.pow(k, i)).toPrecision(3) + ' ' + unit[i];
         }
 
 
@@ -334,7 +374,7 @@ class DashboardController {
                     media: {
                         constraints: {
                             audio: true,
-                            video: true
+                            video: video
                         }
                     }
                 };
@@ -411,11 +451,13 @@ class DashboardController {
                     sessionWindow.dtmfInput.disabled = false;
                     sessionWindow.video.className = 'on';
 
+                    //Odpalenie okna wideo 
                     session.mediaHandler.render(sessionWindow.renderHint);
 
                     console.log(session, 'session.mediaHandler. SESJA');
 
-                    //Pobieranie statystyk połączenia i wyświetlenie ich
+                    //getStats(obiektRTCP, funkcja_zwrotna, interwał)
+                    //Pobieranie statystyk połączenia i wyświetlenie metod do ich wyświetlania
                     getStats(session.mediaHandler.peerConnection, function (result) {
                         _this.showStatistic(result);
                         _this.updateChart(null, result.bandwidth.speed);
