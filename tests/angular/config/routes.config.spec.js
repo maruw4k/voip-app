@@ -8,19 +8,6 @@ ngDescribe({
       deps.$rootScope.$digest()
     }
     describe('path', function () {
-      describe('when empty', function () {
-        it('should go to the app.landing state 1', function () {
-          goTo('')
-          expect(deps.$state.$current.name).toEqual('app.landing')
-        })
-      })
-
-      describe('when /landing', function () {
-        it('should go to the app.landing state 2', function () {
-          goTo('/landing')
-          expect(deps.$state.$current.name).toEqual('app.landing')
-        })
-      })
 
       describe('when /login', function () {
         it('should go to the login state', function () {
