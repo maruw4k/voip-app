@@ -14,19 +14,19 @@ class PermissionsTableSeeder extends Seeder
         DB::table('permissions')->insert([
             [
                 'id' => 1,
-                'name' => 'Manage Users',
+                'name' => 'Zarządzaj użytkownikami',
                 'slug' => 'manage.users',
                 'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
                 'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
             ], [
                 'id' => 2,
-                'name' => 'Manage Roles',
+                'name' => 'Zarządzaj rolami',
                 'slug' => 'manage.roles',
                 'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
                 'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
             ], [
                 'id' => 3,
-                'name' => 'Manage Permissions',
+                'name' => 'Zarządzaj uprawnieniami',
                 'slug' => 'manage.permissions',
                 'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
                 'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
