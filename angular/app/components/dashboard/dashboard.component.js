@@ -47,6 +47,7 @@ class DashboardController {
                 "stun.voipbuster.com",
                 "stun.turnservers.com:3478"
             ],
+            turnServers: []
         };
 
         //Obiekt z wiązaniami do elementów dom
@@ -94,11 +95,22 @@ class DashboardController {
         };
         _this.updateChart(10, 0);
 
-
+        //Ustawienie statusu znajomego
         this.setGuiFriendStatus = function (friend, status) {
             if (status == 'active') {
                 document.getElementById(friend).style.backgroundColor = "green";
             } else return;
+        }
+
+        //Zmiana statusów w GUI 
+        this.setGuiUAStatus = function(btnText, lblText)
+        {
+            console.log('Zmiana w GUI');
+            _this.info.textBtn = btnText;
+            _this.info.status = lblText;
+
+            //aktualizuhe wartości $scope, potrzebne do wyświetlenia w widoku
+            $scope.$apply();
         }
 
 
@@ -119,27 +131,19 @@ class DashboardController {
                 //Ustawienie listenera, który wykona się po połączeniu
                 ua.on('connected', function () {
                     console.log('Connected');
-                    _this.info.status = 'Połączony';
-                    _this.info.textBtn = 'Zarejestruj';
-                    //aktualizuhe wartości $scope, potrzebne do wyświetlenia w widoku
-                    $scope.$apply();
+                    _this.setGuiUAStatus('Zarejestruj','Połączony')
+
                 });
 
                 //Ustawienie listenera, który wykona się po zarejestrowaniu
                 ua.on('registered', function () {
                     console.log('Registered');
-                    _this.info.textBtn = 'Wyloguj';
-                    _this.info.status = 'Zarejestrowano';
-                    //aktualizuhe wartości $scope, potrzebne do wyświetlenia w widoku
-                    $scope.$apply();
+                    _this.setGuiUAStatus('Wyloguj','Zarejestrowano')
                 });
+
                 //Ustawienie listenera, który wykona się po wyrejestrowaniu
                 ua.on('unregistered', function () {
-                    console.log('Niezarejestrowano');
-                    _this.info.textBtn = 'Zarejestruj';
-                    _this.info.status = 'Niezarejestrowano';
-                    //aktualizuhe wartości $scope, potrzebne do wyświetlenia w widoku
-                    $scope.$apply();
+                    _this.setGuiUAStatus('Zarejestruj','Niezarejestrowano');
                 });
 
                 //Ustawienie listenera, który wykona się po nadjeściu połączenia od innego użytkownika
