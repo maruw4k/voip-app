@@ -8,14 +8,14 @@ class LaravelRoutesTest extends TestCase
      *
      * @return void
      */
-    public function testLandingResponseCode()
+    public function testSprawdzenieDocelowejStrony()
     {
         $response = $this->call('GET', '/');
 
         $this->assertEquals(200, $response->status());
     }
 
-    public function testUnsupportedBrowserPage()
+    public function testSprawdzenieNiewspieranychPrzegladarek()
     {
         $this->visit('/unsupported-browser')
              ->see('update your browser')

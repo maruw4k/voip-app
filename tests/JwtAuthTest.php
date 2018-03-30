@@ -7,9 +7,9 @@ class JwtAuthTest extends TestCase
     use DatabaseTransactions;
 
     /**
-     * Test successful login with JWT.
+     * Test pomyślnego logowania z pomocą JWT
      */
-    public function testSuccessfulLogin()
+    public function testPomyslneLogowanie()
     {
         $user = factory(App\User::class)->create([
             'password' => bcrypt('test12345'),
@@ -27,9 +27,9 @@ class JwtAuthTest extends TestCase
     }
 
     /**
-     * Test failed login with JWT.
+     * Test nieudanego logowania z pomocą JWT
      */
-    public function testFailedLogin()
+    public function testNieudaneLogowanie()
     {
         $user = factory(App\User::class)->create([
             'email_verified' => '1',
@@ -45,9 +45,9 @@ class JwtAuthTest extends TestCase
     }
 
     /**
-     * Test successful registration.
+     * Test pomyślnej rejestracji
      */
-    public function testSuccessfulRegistration()
+    public function testPomyslnaRejestracja()
     {
         $user = factory(App\User::class)->make();
 

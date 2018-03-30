@@ -7,19 +7,19 @@ class PasswordResetTest extends TestCase
 {
     use DatabaseTransactions;
 
-    public function testSendEmailWithTokenForResetPassword()
-    {
-        $user = factory(App\User::class)->create();
+    // public function testSendEmailWithTokenForResetPassword()
+    // {
+    //     $user = factory(App\User::class)->create();
 
-        $this->checkEmailContent([
-            'title'   => 'Password reset link',
-            'email'   => $user->email,
-            'content' => 'Reset Password', //contains
-        ]);
+    //     $this->checkEmailContent([
+    //         'title'   => 'Password reset link',
+    //         'email'   => $user->email,
+    //         'content' => 'Reset Password', //contains
+    //     ]);
 
-        $this->post('/api/auth/password/email', ['email' => $user->email])
-        ->seeApiSuccess();
-    }
+    //     $this->post('/api/auth/password/email', ['email' => $user->email])
+    //     ->seeApiSuccess();
+    // }
 
     public function testVerifyTokenSuccessfully()
     {
