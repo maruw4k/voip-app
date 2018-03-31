@@ -15,11 +15,12 @@ ngDescribe({
     tests: function (deps) {
         //Co powinien zawierać
         it('Powinien zawierać inputy: name, email, passwords, sip_uri, sip_login, sip_password, sip_ws, sip_stun, sip_turn', () => {
-            //Wyszukaj elementy input
+            //Wyszukaj elementy input, oczekiwana liczba to 11
             var inputs = deps.element.find('input')
             //Powinno być ich 11, wtedy test zostanie zaliczony
             expect(inputs.length).toBe(11)
 
+            //Pierwszy element inputów powinien być typu tekst
             var name = deps.element.find('input')[0]
             expect(name.attributes['type'].value).toBe('text')
 
