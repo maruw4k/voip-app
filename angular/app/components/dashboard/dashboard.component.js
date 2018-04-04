@@ -267,20 +267,21 @@ class DashboardController {
         //za parametr przyjmuje średni czas rtt, czyli minimalny czas wymagany do przesłania sygnału w obu kierunkach
         this.calculateEmodel = function (avgRtt) {
             var emodel = 0;
-            if (avgRtt === null || avgRtt) {
-                avgRtt = 0;
-            }
+            //DO POPRAWY!!!
+            // if (avgRtt === null || avgRtt) {
+            //     avgRtt = 0;
+            // }
 
-            if (avgRtt / 2 >= 500)
-                emodel = 1;
-            else if (avgRtt / 2 >= 400)
-                emodel = 2;
-            else if (avgRtt / 2 >= 300)
-                emodel = 3;
-            else if (avgRtt / 2 >= 200)
-                emodel = 4;
-            else if (avgRtt / 2 < 200)
-                emodel = 5;
+            // if (avgRtt / 2 >= 500)
+            //     emodel = 1;
+            // else if (avgRtt / 2 >= 400)
+            //     emodel = 2;
+            // else if (avgRtt / 2 >= 300)
+            //     emodel = 3;
+            // else if (avgRtt / 2 >= 200)
+            //     emodel = 4;
+            // else if (avgRtt / 2 < 200)
+            //     emodel = 5;
             return emodel;
         }
 
