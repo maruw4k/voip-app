@@ -19,7 +19,7 @@ class CreateUsersTable extends Migration
             $table->string('name');
             $table->string('sip_uri');
             $table->string('sip_login');
-            $table->string('sip_password');
+            $table->string('sip_password', 60);
             $table->string('sip_ws');
             $table->string('email')->unique();
             $table->string('password', 60);
