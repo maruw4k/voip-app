@@ -13,6 +13,12 @@ class DashboardController {
         //Tablica do przechowywania wartości rtt z RTCP
         var rttMeasures = [];
 
+        //Tablica do przechowywanie wartosci zmiennosci opoznienia(jiiter)
+        var jiiterMeasures = [];
+
+        //Tablica do przechowywanie wartosci poziomu strat
+        var packetLostMeasures = [];
+
         //Obiekt z informacjami do wyświetlenia
         this.info = {
             status: 'Łączenie',
@@ -103,8 +109,7 @@ class DashboardController {
         }
 
         //Zmiana statusów w GUI 
-        this.setGuiUAStatus = function(btnText, lblText)
-        {
+        this.setGuiUAStatus = function (btnText, lblText) {
             console.log('Zmiana w GUI');
             _this.info.textBtn = btnText;
             _this.info.status = lblText;
@@ -131,19 +136,19 @@ class DashboardController {
                 //Ustawienie listenera, który wykona się po połączeniu
                 ua.on('connected', function () {
                     console.log('Connected');
-                    _this.setGuiUAStatus('Zarejestruj','Połączony')
+                    _this.setGuiUAStatus('Zarejestruj', 'Połączony')
 
                 });
 
                 //Ustawienie listenera, który wykona się po zarejestrowaniu
                 ua.on('registered', function () {
                     console.log('Registered');
-                    _this.setGuiUAStatus('Wyloguj','Zarejestrowano')
+                    _this.setGuiUAStatus('Wyloguj', 'Zarejestrowano')
                 });
 
                 //Ustawienie listenera, który wykona się po wyrejestrowaniu
                 ua.on('unregistered', function () {
-                    _this.setGuiUAStatus('Zarejestruj','Niezarejestrowano');
+                    _this.setGuiUAStatus('Zarejestruj', 'Niezarejestrowano');
                 });
 
                 //Ustawienie listenera, który wykona się po nadjeściu połączenia od innego użytkownika
@@ -263,26 +268,27 @@ class DashboardController {
         }
 
 
-        //Liczenie poziomu jakości według skali e-model, 
-        //za parametr przyjmuje średni czas rtt, czyli minimalny czas wymagany do przesłania sygnału w obu kierunkach
-        this.calculateEmodel = function (avgRtt) {
-            var emodel = 0;
-            //DO POPRAWY!!!
-            // if (avgRtt === null || avgRtt) {
-            //     avgRtt = 0;
-            // }
+        //Liczenie poziomu jakości według skali mos, 
+        this.calculateMos = function (avgRtt, avgJiiter, avgPacketLost, codec) {
+            var mos = 0;
+            var r = 0;
+            //wartość podstawowowa obliczona z parametrtów analogowych
+            var r0 = 93.2;
 
-            // if (avgRtt / 2 >= 500)
-            //     emodel = 1;
-            // else if (avgRtt / 2 >= 400)
-            //     emodel = 2;
-            // else if (avgRtt / 2 >= 300)
-            //     emodel = 3;
-            // else if (avgRtt / 2 >= 200)
-            //     emodel = 4;
-            // else if (avgRtt / 2 < 200)
-            //     emodel = 5;
-            return emodel;
+            //opóźnienie (wpływ opóźnienia pakietów na jakość głosu)
+            var latency = avgJiiter;
+
+            //wpływ strat pakietów przy uwzględnieniu specyfiki używanego kodeka
+            var packetLost = avgPacketLost;
+
+            //oczekiwania uzytkownika w rozmowie, dla sieci bezprzewodowych: 5, przewodowych: 0
+            var a = 5;
+
+            r = r0 - latency - packetLost + a;
+
+
+            mos = 1 + (0.035 * r) + (0.000007 * r) * (r - 60) * (100 - r);
+            return mos;
         }
 
         //Pokazywanie statystyk
@@ -302,15 +308,33 @@ class DashboardController {
                 var now = result.results[i];
 
                 if (now.type == 'ssrc') {
+
+                    var isSending = now.id.indexOf('_send') !== -1; // sender or receiver
+
                     //wrzuca do tablicy wartości rtt
                     rttMeasures.push(now.googRtt);
-                    // liczy średną rtt
+                    jiiterMeasures.push(now.googJitterReceived);
+                    // googCurrentDelayMs
+                    packetLostMeasures.push(now.packetsLost);
+
+                    // console.log(now, 'statystyki!');
+
+                    console.log(rttMeasures, jiiterMeasures, packetLostMeasures)
+
+                    // liczy średną rtt (minimalny czas wymagany do przesłania sygnału w obu kierunkach)
                     var avgRtt = _this.calculateAverage(rttMeasures);
-                    // console.log('avgrtt', avgRtt);
-                    //funkcja liczy wartość e-model
-                    _this.calculateEmodel(avgRtt);
+
+                    //liczy średni jjiter (zmienność opóźnienia)
+                    var avgJiiter = _this.calculateAverage(jiiterMeasures);
+
+                    //liczy średni poziom strat
+                    var avgPacketLost = _this.calculateAverage(packetLostMeasures);
+
+
+                    //funkcja liczy wartość emos
+                    var emos = _this.calculateMos(avgRtt, avgJiiter, avgPacketLost, now.googCodecName);
                     //wyświetlenie wartości emodel w GUI
-                    document.getElementById('emodel').innerHTML = _this.calculateEmodel(avgRtt).toString();
+                    document.getElementById('emodel').innerHTML = emos.toString();
                 }
             }
         }
@@ -397,7 +421,7 @@ class DashboardController {
                     //Odpalenie funkcji, która zawiera odpowiednie akcji na rozmowę
                     setUpListeners(session);
                 } else if (session.accept && !session.startTime) { // W przypadku gdy połączenie nadchodzi ale nie zaczęło się rozmowy, to odbierz
-                    session.accept(options); 
+                    session.accept(options);
                 }
             }, false);
 
