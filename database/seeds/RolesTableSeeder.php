@@ -17,7 +17,6 @@ class RolesTableSeeder extends Seeder
                 'name' => 'Super Admin',
                 'slug' => 'admin.super',
                 'description' => 'Super Admin',
-                'level' => '1',
                 'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
                 'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
             ], [
@@ -25,7 +24,6 @@ class RolesTableSeeder extends Seeder
                 'name' => 'User Admin',
                 'slug' => 'admin.user',
                 'description' => 'Może zarządzać użytkowikami',
-                'level' => '1',
                 'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
                 'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
             ], [
@@ -33,7 +31,6 @@ class RolesTableSeeder extends Seeder
                 'name' => 'Role Admin',
                 'slug' => 'admin.role',
                 'description' => 'Może zarządzać rolami',
-                'level' => '1',
                 'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
                 'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
             ], [
@@ -41,7 +38,6 @@ class RolesTableSeeder extends Seeder
                 'name' => 'Permission Admin',
                 'slug' => 'admin.permission',
                 'description' => 'Może zarządzać uprawnieniami',
-                'level' => '1',
                 'created_at' => \Carbon\Carbon::now()->toDateTimeString(),
                 'updated_at' => \Carbon\Carbon::now()->toDateTimeString(),
             ],
