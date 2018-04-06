@@ -268,27 +268,44 @@ class DashboardController {
         }
 
 
-        //Liczenie poziomu jakości według skali mos, 
-        this.calculateMos = function (avgRtt, avgJiiter, avgPacketLost, codec) {
-            var mos = 0;
-            var r = 0;
-            //wartość podstawowowa obliczona z parametrtów analogowych
-            var r0 = 93.2;
-
-            //opóźnienie (wpływ opóźnienia pakietów na jakość głosu)
-            var latency = avgJiiter;
-
-            //wpływ strat pakietów przy uwzględnieniu specyfiki używanego kodeka
-            var packetLost = avgPacketLost;
-
+        //Liczenie poziomu jakości według skali MOS
+        this.calculateMos = function (rtt, packetLoss, codec) {
             //oczekiwania uzytkownika w rozmowie, dla sieci bezprzewodowych: 5, przewodowych: 0
             var a = 5;
+            //wartości otrzymane w badaniach metodą ACR zależnie od kodeka
+            switch (codec) {
+                case 'G.711':
+                    var a = 22;
+                    var b = 20;
+                    var c = 0;
+                    break;
+                    //jeśli inny kodek, to wartości przybliżone
+                default:
+                    var a = 33;
+                    var b = 15;
+                    var c = 15;
+            }
 
-            r = r0 - latency - packetLost + a;
+            //Funkcja pomocniza do zwracania 0 jeśli x jest liczbą ujemną
+            function H(x) {
+                return (x < 0 ? 0 : 1)
+            }
+            //Id jest składnikiem modelującym wpływ opóźnienia pakietów na jakość głosu
+            var Id = 0.024 * rtt + 0.11 * (rtt - 177.3) * H(rtt - 177.3);
+            //Ie – jest składnikiem modelującym wpływ strat pakietów przy uwzględnieniu specyfiki używanego kodeka
+            var Ie = a + b * Math.log(1 + c * packetLoss);
 
+            //R = 93.2 − Id − Ie + A
+            //93.2 jest wartością podstawową, obliczoną z wartości parametrów analogowych
+            R = 93.2 - Id - Ie + a;
 
-            mos = 1 + (0.035 * r) + (0.000007 * r) * (r - 60) * (100 - r);
-            return mos;
+            if (R < 0) {
+                return 1;
+            }
+            if (R > 100) {
+                return 5;
+            }
+            return 1 + 0.035 * R + 7.10 / 1000000 * R * (R - 60) * (100 - R);
         }
 
         //Pokazywanie statystyk
@@ -331,10 +348,10 @@ class DashboardController {
                     var avgPacketLost = _this.calculateAverage(packetLostMeasures);
 
 
-                    //funkcja liczy wartość emos
-                    var emos = _this.calculateMos(avgRtt, avgJiiter, avgPacketLost, now.googCodecName);
-                    //wyświetlenie wartości emodel w GUI
-                    document.getElementById('emodel').innerHTML = emos.toString();
+                    //funkcja liczy wartość mos
+                    var mos = _this.calculateMos(avgRtt, avgPacketLost, now.googCodecName);
+                    //wyświetlenie wartości mos w GUI
+                    document.getElementById('mos').innerHTML = mos.toString();
                 }
             }
         }
